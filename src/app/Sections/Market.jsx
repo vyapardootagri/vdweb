@@ -1,110 +1,149 @@
 "use client";
 
 import React from "react";
-import { Box, Typography, Stack, Divider, Container } from "@mui/material";
+import { Box, Typography, Stack, Grid, Container, Chip, Divider } from "@mui/material";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
 
-// Premium Icons
+// Icons
 import LanguageIcon from "@mui/icons-material/Language";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
+import HomeWorkIcon from "@mui/icons-material/HomeWork";
+import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 
 const countries = [
-  { name: "Nepal", code: "NP" },
-  { name: "Bangladesh", code: "BD" },
-  { name: "Sri Lanka", code: "LK" },
-  { name: "Bhutan", code: "BT" },
-  { name: "UAE", code: "AE" },
-  { name: "Vietnam", code: "VN" }
+  { name: "Nepal", code: "NP" }, { name: "Bangladesh", code: "BD" },
+  { name: "Sri Lanka", code: "LK" }, { name: "Bhutan", code: "BT" },
+  { name: "UAE", code: "AE" }, { name: "Vietnam", code: "VN" }
 ];
 
-export default function IndiaAndExportStats() {
+export default function VyaparDootStats() {
   return (
-    <Box component="section" sx={{ minHeight: "80vh", display: "flex", flexDirection: { xs: "column", lg: "row" }, bgcolor: "#fff" }}>
-      
-      {/* LEFT PANEL: Sticky Brand Anchor (Occupies 40% Desktop Width) */}
-      <Box sx={{ 
-        flex: { lg: "0 0 40%" }, 
-        bgcolor: "#1a1a1a", 
-        color: "#fff", 
-        p: { xs: 6, md: 10 },
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        position: { lg: "sticky" },
-        top: 0,
-        height: { lg: "100vh" }
-      }}>
-        <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-          <Typography variant="overline" sx={{ color: "#d4af37", fontWeight: 900, letterSpacing: 5 }}>
-            NETWORK FOOTPRINT
-          </Typography>
-          <Typography variant="h2" sx={{ fontFamily: 'var(--font-playfair)', fontWeight: 900, mt: 2, mb: 4, lineHeight: 1.1 }}>
-            Global Trade, <br /> Local Expertise.
-          </Typography>
-          <Divider sx={{ borderColor: "rgba(212,175,55,0.3)", width: "80px", mb: 4, borderBottomWidth: 3 }} />
-          <Typography variant="body1" sx={{ color: "rgba(255,255,255,0.6)", maxWidth: "400px", lineHeight: 1.8 }}>
-            Vyapar Doot bridges the gap between India's finest spice clusters and the global marketplace through a robust, high-volume supply chain.
-          </Typography>
-        </motion.div>
-      </Box>
-
-      {/* RIGHT PANEL: High-Density Data (Occupies 60% Desktop Width) */}
-      <Box sx={{ flex: 1, p: { xs: 6, md: 10 }, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+    <Box component="section" sx={{ bgcolor: "#fff", color: "#1a1a1a", py: { xs: 8, md: 12 } }}>
+      <Container maxWidth="xl">
         
-        {/* Statistics Rows */}
-        <Stack spacing={8}>
-          <BigStat icon={<WarehouseIcon />} label="Annual Trading Volume" value={1000} suffix="+" unit="TONS" />
-          <BigStat icon={<LocalShippingIcon />} label="Bulk Trading Partners" value={500} suffix="+" unit="TRADERS" />
-          <BigStat icon={<LanguageIcon />} label="International Presence" value={25} suffix="+" unit="COUNTRIES" />
-        </Stack>
-
-        {/* Export Destinations - Modern Horizontal Flow */}
-        <Box sx={{ mt: 10, pt: 8, borderTop: "1px solid #eee" }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 900, color: "#999", letterSpacing: 2, mb: 4 }}>
-            STRATEGIC EXPORT PARTNERS
-          </Typography>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: { xs: 2, md: 4 } }}>
-            {countries.map((c, i) => (
-              <motion.div key={c.name} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: i * 0.1 }}>
-                <Stack direction="row" spacing={1.5} alignItems="center" sx={{ bgcolor: "#f9f9f9", py: 1.5, px: 3, borderRadius: "50px", border: "1px solid #eee" }}>
-                  <Box component="img" src={`https://flagcdn.com/w40/${c.code.toLowerCase()}.png`} sx={{ width: 24, borderRadius: "2px" }} />
-                  <Typography sx={{ fontWeight: 700, color: "#1a1a1a", fontSize: "0.9rem" }}>{c.name}</Typography>
-                </Stack>
-              </motion.div>
-            ))}
-          </Box>
+        {/* HEADER SECTION: Center Aligned Narrative */}
+        <Box sx={{ maxWidth: "800px", mb: 10 }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <Typography variant="overline" sx={{ color: "#d4af37", fontWeight: 900, letterSpacing: 4 }}>
+              MARKET INFRASTRUCTURE
+            </Typography>
+            <Typography variant="h2" sx={{ 
+              fontFamily: 'var(--font-playfair)', 
+              fontWeight: 900, 
+              mt: 2, mb: 3, 
+              fontSize: { xs: "2.5rem", md: "4.2rem" },
+              lineHeight: 1
+            }}>
+              Dominating the <span style={{ color: "#d4af37" }}>Domestic</span> Core.<br />
+              Fueling <span style={{ textDecoration: "underline" }}>Global</span> Demand.
+            </Typography>
+            <Typography variant="body1" sx={{ color: "#666", fontSize: "1.2rem", maxWidth: "600px" }}>
+              A robust dual-channel supply chain bridging Indian spice clusters with high-growth international corridors.
+            </Typography>
+          </motion.div>
         </Box>
-      </Box>
 
+        <Grid container spacing={4}>
+          
+          {/* LEFT COLUMN: Large Hero Stat (Domestic focus) */}
+          <Grid item xs={12} md={7}>
+            <StatBox 
+              dark 
+              icon={<HomeWorkIcon sx={{ fontSize: 50 }} />}
+              label="The Indian Network"
+              value={100} suffix="K+" unit="Metric Tons"
+              desc="Annual domestic movement across 15+ major spice clusters. From procurement to processing, we manage the entire lifecycle."
+            />
+          </Grid>
+
+          {/* RIGHT COLUMN: Two Stacked Stats */}
+          <Grid item xs={12} md={5}>
+            <Stack spacing={4} sx={{ height: "100%" }}>
+              <StatBox 
+                icon={<BusinessCenterIcon sx={{ fontSize: 40 }} />}
+                label="B2B Synergy"
+                value={1000} suffix="+" unit="Partners"
+                desc="A verified network of wholesalers and retail bulk buyers."
+              />
+              <StatBox 
+                icon={<LanguageIcon sx={{ fontSize: 40 }} />}
+                label="Cross-Border Presence"
+                value={4} suffix="+" unit="Regions"
+                desc="Strategic logistics hubs neighbouring countries of india."
+              />
+            </Stack>
+          </Grid>
+
+          {/* BOTTOM ROW: Full Width Export Partners */}
+          <Grid item xs={12}>
+            <Box sx={{ 
+              mt: 4, p: 4, 
+              border: "1px solid #eee", 
+              borderRadius: "24px",
+              display: "flex", 
+              flexDirection: { xs: "column", md: "row" },
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 4
+            }}>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 900, mb: 0.5 }}>Strategic Export Alliances</Typography>
+                <Typography variant="body2" sx={{ color: "#999" }}>Our primary international trade corridors and partner nations.</Typography>
+              </Box>
+              
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, justifyContent: "center" }}>
+                {countries.map((c) => (
+                  <Chip 
+                    key={c.name}
+                    avatar={<Box component="img" src={`https://flagcdn.com/w40/${c.code.toLowerCase()}.png`} sx={{ borderRadius: "2px" }} />}
+                    label={c.name}
+                    variant="outlined"
+                    sx={{ fontWeight: 700, px: 1, height: "40px", borderRadius: "10px", borderColor: "#eee" }}
+                  />
+                ))}
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
     </Box>
   );
 }
 
-// Sub-component for clean, high-density stats
-function BigStat({ icon, label, value, suffix, unit }) {
+function StatBox({ icon, label, value, suffix, unit, desc, dark = false }) {
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
+    <motion.div 
+      whileHover={{ y: -5 }}
+      style={{ height: "100%" }}
+    >
       <Box sx={{ 
-        width: 80, height: 80, borderRadius: "20px", bgcolor: "#fcf8ed", 
-        display: "flex", alignItems: "center", justifyContent: "center", color: "#d4af37" 
+        p: { xs: 4, md: 6 }, 
+        height: "100%", 
+        bgcolor: dark ? "#1a1a1a" : "#f8f9fa", 
+        color: dark ? "#fff" : "#1a1a1a",
+        borderRadius: "32px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center"
       }}>
-        {React.cloneElement(icon, { sx: { fontSize: 40 } })}
-      </Box>
-      
-      <Box sx={{ flex: 1 }}>
-        <Typography variant="subtitle2" sx={{ fontWeight: 800, color: "#999", letterSpacing: 1 }}>
+        <Box sx={{ color: "#d4af37", mb: 3 }}>{icon}</Box>
+        <Typography variant="subtitle2" sx={{ fontWeight: 800, letterSpacing: 2, opacity: 0.7, textTransform: "uppercase", mb: 1 }}>
           {label}
         </Typography>
-        <Stack direction="row" alignItems="baseline" spacing={1}>
-          <Typography variant="h2" sx={{ fontWeight: 900, color: "#1a1a1a", fontSize: { xs: "3rem", md: "4.5rem" }, lineHeight: 1 }}>
+        <Stack direction="row" alignItems="baseline" spacing={1} sx={{ mb: 2 }}>
+          <Typography variant="h2" sx={{ fontWeight: 900, fontSize: { xs: "3rem", md: "4.5rem" }, lineHeight: 1 }}>
             <CountUp end={value} duration={2.5} enableScrollSpy scrollSpyOnce />
-            <Box component="span" sx={{ color: "#d4af37" }}>{suffix}</Box>
+            <span style={{ color: "#d4af37" }}>{suffix}</span>
           </Typography>
-          <Typography variant="h6" sx={{ fontWeight: 900, color: "#ccc" }}>{unit}</Typography>
+          <Typography variant="h6" sx={{ fontWeight: 800, opacity: 0.4 }}>{unit}</Typography>
         </Stack>
+        <Divider sx={{ my: 3, borderColor: dark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }} />
+        <Typography variant="body1" sx={{ opacity: 0.8, lineHeight: 1.6, maxWidth: "450px" }}>
+          {desc}
+        </Typography>
       </Box>
-    </Box>
+    </motion.div>
   );
 }

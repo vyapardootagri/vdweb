@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import emailjs from "@emailjs/browser";
 import {
   Box, Typography, Grid, TextField,
@@ -12,128 +12,176 @@ import { East, LinkedIn, Public } from "@mui/icons-material";
 export default function ContactPage() {
   const formRef = useRef();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  useEffect(() => {
+    setLoading(false);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // PASTE YOUR ACTUAL IDs HERE FROM THE DASHBOARD
-    const SERVICE_ID = "service_jmxje56";  // Check Email Services tab
-    const TEMPLATE_ID = "template_k5jav2h"; // Check Email Templates tab
-    const PUBLIC_KEY = "5td2imKAGRSIIu6Ha";   // Check Account -> API Keys tab
+    const SERVICE_ID = "service_24u1ybi"; 
+    const TEMPLATE_ID = "template_4l04gxf"; 
+    const PUBLIC_KEY = "qQidVoE0H-xPwYEeg"; 
 
     try {
       await emailjs.sendForm(
         SERVICE_ID,
         TEMPLATE_ID,
-        formRef.current, // Ensure your <Box component="form"> has ref={formRef}
+        formRef.current,
         PUBLIC_KEY
       );
-
       setSnackbarOpen(true);
-      window.dispatchEvent(new Event("form-submitted"));
       e.target.reset();
     } catch (error) {
-      // If you still get a 400, this will log the specific detail
       console.error("EmailJS Error:", error);
-      alert("Error: " + error.text);
+      alert(`Submission Error: ${error?.text || "Please verify your EmailJS configuration."}`);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box id="contact-section1" sx={{ bgcolor: "#fff", color: "#1a1a1a", borderTop: "1px solid #eee" }}>
-      <Grid container>
-
-        {/* --- Left Column: Branding --- */}
-        <Grid size={{ xs: 12, md: 6 }} sx={{
-          p: { xs: 4, sm: 6, md: 10 },
-          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-          borderRight: { md: "1px solid #eee" },
-          minHeight: { md: "100vh" }
+    <Box sx={{ bgcolor: "#FDFDFD", minHeight: "100vh" }}>
+      <Grid container sx={{ minHeight: "100vh" }}>
+        
+        {/* --- LEFT PANEL: BRANDING & IDENTITY --- */}
+        <Grid item xs={12} md={5} sx={{ 
+            p: { xs: 4, sm: 8, md: 12 }, 
+            display: 'flex', 
+            flexDirection: 'column',
+            justifyContent: 'center',
+            bgcolor: "#FFF",
+            borderRight: { md: "1px solid #f0f0f0" }
         }}>
-          <Box>
-            <Typography variant="overline" sx={{ fontWeight: 900, letterSpacing: 6, color: "#DAA520" }}>
-              VYAPAR DOOT • HQ
-            </Typography>
-            <Typography variant="h1" sx={{
-              fontFamily: "'Playfair Display', serif",
-              fontWeight: 900,
-              fontSize: { xs: "3.5rem", sm: "4.5rem", md: "6rem" },
-              lineHeight: 0.85, mt: 4, mb: { xs: 4, md: 8 }
-            }}>
-              Let's Talk <br /> Trade.
-            </Typography>
+          <Typography variant="overline" sx={{ fontWeight: 900, letterSpacing: 3, color: "#DAA520", mb: 2 }}>
+            VYAPAR DOOT AGRI
+          </Typography>
+          <Typography variant="h2" sx={{ 
+            fontFamily: "'Playfair Display', serif", 
+            fontWeight: 800, 
+            lineHeight: 1.1, 
+            color: "#1a1a1a",
+            mb: 4 
+          }}>
+            Global Trade. <br />Kota Mandi.
+          </Typography>
+          
+          <Typography variant="body1" sx={{ color: "#666", mb: 6, maxWidth: 400, lineHeight: 1.7 }}>
+            Strategically located in the heart of Rajasthan's agricultural hub to facilitate seamless crop procurement and global distribution.
+          </Typography>
 
-            <Stack spacing={8}>
-              <Box>
-                <Typography sx={{ fontWeight: 900, fontSize: "0.7rem", color: "#999", mb: 1, letterSpacing: 2 }}>LOCAL OPERATIONS</Typography>
-                <Typography variant="h6" sx={{ fontWeight: 800 }}>
-                  Spice Trade Center, Mansarovar <br /> Jaipur, Rajasthan 302020, India.
-                </Typography>
-              </Box>
-              <Box>
-                <Typography sx={{ fontWeight: 900, fontSize: "0.7rem", color: "#999", mb: 1, letterSpacing: 2 }}>GLOBAL REACH</Typography>
-                <Typography variant="h6" sx={{ fontWeight: 800 }}>trade@vyapardoot.com</Typography>
-              </Box>
-            </Stack>
+          <Stack spacing={4} sx={{ mb: 6 }}>
+            <Box>
+              <Typography variant="caption" sx={{ fontWeight: 900, color: "#999", letterSpacing: 1 }}>HEADQUARTERS</Typography>
+              <Typography variant="body1" sx={{ fontWeight: 600, color: "#1a1a1a" }}>
+              Vyapar Doot - D-255, Seth Bhamasha Krishi Upaj Mandi, <br />
+                Kota, Rajasthan 324005
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant="caption" sx={{ fontWeight: 900, color: "#999", letterSpacing: 1 }}>EMAIL ENQUIRIES</Typography>
+              <Typography variant="body1" sx={{ fontWeight: 600, color: "#DAA520" }}>
+                vyapardootagri@gmail.com
+              </Typography>
+            </Box>
+          </Stack>
+
+          {/* GOOGLE MAPS EMBED SECTION */}
+          <Box sx={{ width: "100%", height: "200px", borderRadius: "4px", overflow: "hidden", mb: 4, border: "1px solid #eee" }}>
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3612.332306857102!2d75.87202047537936!3d25.12082153464731!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396f9af80031f231%3A0x3e2736a5c76f7fd5!2sVyapar%20doot!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              allowFullScreen="" 
+              loading="lazy"
+            ></iframe>
           </Box>
 
-          <Stack direction="row" spacing={3} sx={{ mt: 10 }}>
-            <IconButton sx={{ color: "#1a1a1a", p: 0 }}><LinkedIn /></IconButton>
-            <IconButton sx={{ color: "#1a1a1a", p: 0 }}><Public /></IconButton>
-            <Box sx={{ flexGrow: 1 }} />
-            <Typography sx={{ fontWeight: 900, fontSize: "0.7rem", color: "#999" }}>JAIPUR • UTC +5:30</Typography>
+          <Stack direction="row" spacing={2}>
+            <IconButton sx={{ color: "#1a1a1a", border: "1px solid #eee", "&:hover": { bgcolor: "#DAA520", color: "#fff" } }}><LinkedIn /></IconButton>
+            <IconButton sx={{ color: "#1a1a1a", border: "1px solid #eee", "&:hover": { bgcolor: "#DAA520", color: "#fff" } }}><Public /></IconButton>
           </Stack>
         </Grid>
 
-        {/* --- Right Column: Sticky Inquiry Form --- */}
-        <Grid size={{ xs: 12, md: 6 }} sx={{
-          p: { xs: 4, sm: 6, md: 10 },
-          bgcolor: "#1a1a1a", color: "#fff",
-          display: 'flex', flexDirection: 'column', justifyContent: 'center',
-          position: { md: "sticky" }, top: 0, height: { md: "100vh" }, overflowY: "auto"
+        {/* --- RIGHT PANEL: THE FORM --- */}
+        <Grid item xs={12} md={7} sx={{ 
+          bgcolor: "#111", 
+          p: { xs: 4, sm: 8, md: 12 },
+          display: 'flex',
+          alignItems: 'center'
         }}>
-          <Typography variant="h4" sx={{ fontWeight: 900, mb: 6, fontFamily: "'Playfair Display', serif", fontSize: { xs: "2rem", md: "2.5rem" } }}>
-            Direct Inquiry
-          </Typography>
+          <Box component="form" ref={formRef} onSubmit={handleSubmit} sx={{ width: "100%", maxWidth: 550, mx: "auto" }}>
+            <Typography variant="h4" sx={{ color: "#FFF", fontFamily: "'Playfair Display', serif", mb: 1, fontWeight: 700 }}>
+              Direct Procurement Inquiry
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#666", mb: 6 }}>
+              Submit your trade requirements and our officer will respond within 12 hours.
+            </Typography>
 
-          <Box component="form" ref={formRef} onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <TextField fullWidth name="user_name" variant="standard" label="FULL NAME" required InputLabelProps={{ sx: { color: "rgba(255,255,255,0.4)", fontWeight: 800, fontSize: "0.7rem" } }} inputProps={{ sx: { color: "#fff", py: 1.5 } }} sx={{ "& .MuiInput-underline:before": { borderBottomColor: "rgba(255,255,255,0.1)" }, "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: "#DAA520" } }} />
-
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={5}>
-              <TextField fullWidth name="user_email" variant="standard" label="EMAIL ADDRESS" type="email" required InputLabelProps={{ sx: { color: "rgba(255,255,255,0.4)", fontWeight: 800, fontSize: "0.7rem" } }} inputProps={{ sx: { color: "#fff", py: 1.5 } }} sx={{ "& .MuiInput-underline:before": { borderBottomColor: "rgba(255,255,255,0.1)" } }} />
-              <TextField fullWidth name="user_phone" variant="standard" label="MOBILE / WHATSAPP" required InputLabelProps={{ sx: { color: "rgba(255,255,255,0.4)", fontWeight: 800, fontSize: "0.7rem" } }} inputProps={{ sx: { color: "#fff", py: 1.5 } }} sx={{ "& .MuiInput-underline:before": { borderBottomColor: "rgba(255,255,255,0.1)" } }} />
-            </Stack>
-
-            <TextField fullWidth name="company" variant="standard" label="COMPANY & REGION" InputLabelProps={{ sx: { color: "rgba(255,255,255,0.4)", fontWeight: 800, fontSize: "0.7rem" } }} inputProps={{ sx: { color: "#fff", py: 1.5 } }} sx={{ "& .MuiInput-underline:before": { borderBottomColor: "rgba(255,255,255,0.1)" } }} />
-
-            <TextField fullWidth name="message" multiline rows={3} variant="standard" label="TRADE REQUIREMENTS" InputLabelProps={{ sx: { color: "rgba(255,255,255,0.4)", fontWeight: 800, fontSize: "0.7rem" } }} inputProps={{ sx: { color: "#fff", py: 1.5 } }} sx={{ "& .MuiInput-underline:before": { borderBottomColor: "rgba(255,255,255,0.1)" } }} />
-
-            <Box sx={{ mt: 2 }}>
-              <Button
-                type="submit" variant="contained" disabled={loading} fullWidth={isMobile}
-                endIcon={!loading && <East />}
-                sx={{
-                  bgcolor: "#DAA520", color: "#1a1a1a", px: 8, py: 2.5, borderRadius: 0, fontWeight: 900,
-                  "&:hover": { bgcolor: "#fff" }, "&.Mui-disabled": { bgcolor: "rgba(218, 165, 32, 0.4)" }
-                }}
-              >
-                {loading ? <CircularProgress size={24} sx={{ color: "#1a1a1a" }} /> : "INITIATE PARTNERSHIP"}
-              </Button>
-            </Box>
+            <Grid container spacing={4}>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth name="user_name" label="Full Name" variant="standard" required 
+                  InputLabelProps={{ sx: { color: "#555" } }}
+                  sx={{ input: { color: "#FFF" }, "& .MuiInput-underline:before": { borderBottomColor: "#333" } }} />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth name="user_email" label="Email Address" variant="standard" type="email" required 
+                  InputLabelProps={{ sx: { color: "#555" } }}
+                  sx={{ input: { color: "#FFF" }, "& .MuiInput-underline:before": { borderBottomColor: "#333" } }} />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth name="user_phone" label="Mobile / WhatsApp" variant="standard" required 
+                  InputLabelProps={{ sx: { color: "#555" } }}
+                  sx={{ input: { color: "#FFF" }, "& .MuiInput-underline:before": { borderBottomColor: "#333" } }} />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth name="company_name" label="Company Name" variant="standard" 
+                  InputLabelProps={{ sx: { color: "#555" } }}
+                  sx={{ input: { color: "#FFF" }, "& .MuiInput-underline:before": { borderBottomColor: "#333" } }} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField fullWidth name="message" label="Requirements (Crop type, Tonnage, Destination)" variant="standard" multiline rows={3} 
+                  InputLabelProps={{ sx: { color: "#555" } }}
+                  sx={{ "& .MuiInputBase-root": { color: "#FFF" }, "& .MuiInput-underline:before": { borderBottomColor: "#333" } }} />
+              </Grid>
+              
+              <Grid item xs={12} sx={{ mt: 4 }}>
+                <Button 
+                  type="submit" 
+                  disabled={loading}
+                  variant="contained" 
+                  fullWidth={isMobile}
+                  endIcon={!loading && <East />}
+                  sx={{ 
+                    bgcolor: "#DAA520", 
+                    color: "#1a1a1a", 
+                    px: 8, 
+                    py: 2, 
+                    fontWeight: 900, 
+                    borderRadius: 0,
+                    transition: "0.3s all ease",
+                    "&:hover": { bgcolor: "#FFF", transform: "translateY(-2px)" },
+                    "&.Mui-disabled": { bgcolor: "#333", color: "#666" }
+                  }}
+                >
+                  {loading ? <CircularProgress size={24} color="inherit" /> : "INITIATE PARTNERSHIP"}
+                </Button>
+              </Grid>
+            </Grid>
           </Box>
         </Grid>
       </Grid>
 
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
         <Alert severity="success" sx={{ bgcolor: "#DAA520", color: "#1a1a1a", fontWeight: 900, borderRadius: 0 }}>
-          ENQUIRY LOGGED. OUR TRADE OFFICER WILL RESPOND WITHIN 12 HOURS.
+          SUCCESS: YOUR INQUIRY HAS BEEN LOGGED.
         </Alert>
       </Snackbar>
     </Box>
