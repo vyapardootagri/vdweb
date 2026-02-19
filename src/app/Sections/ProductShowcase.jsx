@@ -63,7 +63,7 @@ const FEATURED = [
   },
   { 
     name: "Nigella sativa\n(Kalonji)", 
-    image: "/spices/kalonji.jpg", 
+    image: "/spices/Kalonji.jpg", 
     hubs: ["Rajasthan", "Madhya Pradesh"], 
     size: 4 
   },
