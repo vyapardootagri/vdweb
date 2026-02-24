@@ -1,158 +1,190 @@
 "use client";
 import React, { useRef } from "react";
-import { Box, Typography, Container, Grid, Stack, Divider } from "@mui/material";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { Box, Typography, Container, Stack, Divider } from "@mui/material";
+import { motion, useInView } from "framer-motion";
 
 export default function FounderSection() {
   const containerRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-
-  // Reduced parallax intensity for mobile to keep it smooth
-  const yImage = useTransform(scrollYProgress, [0, 1], [20, -20]);
-  const yCard = useTransform(scrollYProgress, [0, 1], [40, -40]);
+  const isInView = useInView(containerRef, { once: true, margin: "-10%" });
 
   return (
     <Box
       ref={containerRef}
       component="section"
       sx={{
-        position: "relative",
-        minHeight: { xs: "auto", md: "100vh" },
-        display: "flex",
-        alignItems: "center",
         bgcolor: "#0a0a0a",
+        color: "#fff",
+        // Adjusted padding for mobile vs desktop
+        py: { xs: 6, md: 15 }, 
+        position: "relative",
         overflow: "hidden",
-        // Padding adjusted for mobile navigation
-        pt: { xs: 10, md: 0 },
-        pb: { xs: 8, md: 0 }
       }}
     >
-      {/* 1. LARGE BACKGROUND NAME (Scales down for mobile) */}
-      <Typography
-        variant="h1"
-        sx={{
-          position: "absolute",
-          bottom: { xs: "2%", md: "5%" },
-          right: "2%",
-          fontSize: { lg: "18rem", md: "12rem", sm: "8rem", xs: "4rem" },
-          fontWeight: 900,
-          color: "rgba(212, 175, 55, 0.03)",
-          fontFamily: "'Playfair Display', serif",
-          zIndex: 0,
-          pointerEvents: "none",
-          userSelect: "none"
-        }}
-      >
-        BHATIA
-      </Typography>
+      <Container maxWidth="lg">
+        {/* 1. BACKGROUND TEXT - Simplified for mobile to prevent horizontal overflow */}
+        <Typography
+          variant="h1"
+          sx={{
+            position: "absolute",
+            top: { xs: "5%", md: "10%" },
+            left: "5%",
+            fontFamily: "'Playfair Display', serif",
+            fontSize: { xs: "18vw", md: "10vw" },
+            fontWeight: 900,
+            color: "rgba(212, 175, 55, 0.04)",
+            textTransform: "uppercase",
+            zIndex: 0,
+            pointerEvents: "none",
+          }}
+        >
+          Visionary
+        </Typography>
 
-      <Container maxWidth="xl" sx={{ position: "relative", zIndex: 10 }}>
-        <Grid container spacing={{ xs: 4, md: 0 }} alignItems="center">
-
-          {/* 2. THE PORTRAIT (Stacks on top for mobile) */}
-          <Grid size={{ xs: 12, md: 5 }}>
-            <motion.div style={{ y: yImage }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            alignItems: { xs: "center", md: "flex-start" },
+            gap: { xs: 4, md: 8 },
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
+          {/* 2. THE PORTRAIT - Centered and scaled for mobile */}
+          <Box sx={{ width: { xs: "100%", sm: "80%", md: "40%" } }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 1, ease: "easeOut" }}
+            >
               <Box
                 sx={{
                   position: "relative",
-                  width: { xs: "85%", sm: "70%", md: "100%" },
-                  maxWidth: "500px",
-                  mx: "auto",
-                  "&::before": {
+                  // Added a subtle gold frame that works better on small screens
+                  "&::after": {
                     content: '""',
                     position: "absolute",
-                    top: -15,
-                    left: -15,
-                    width: "100%",
-                    height: "100%",
+                    top: "10px",
+                    left: "10px",
+                    right: "-10px",
+                    bottom: "-10px",
                     border: "1px solid rgba(212, 175, 55, 0.3)",
                     zIndex: -1,
-                    // Hide decorative frame on very small screens if it feels cluttered
-                    display: { xs: 'none', sm: 'block' }
-                  }
+                  },
                 }}
               >
                 <Box
                   component="img"
-                  src="https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  src="https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=2070&auto=format&fit=crop"
                   alt="Mukesh Bhatia"
                   sx={{
                     width: "100%",
-                    height: "auto",
+                    height: { xs: "350px", sm: "450px", md: "550px" },
+                    objectFit: "cover",
                     display: "block",
-                    filter: { xs: "none", md: "brightness(80%) contrast(1.1)" },
-                    borderRadius: { xs: "8px", md: "0px" }, // Softer look for mobile
-                    boxShadow: { xs: "20px 20px 40px rgba(0,0,0,0.6)", md: "40px 40px 80px rgba(0,0,0,0.8)" }
+                    filter: "contrast(1.1) brightness(0.9)",
                   }}
                 />
               </Box>
             </motion.div>
-          </Grid>
+          </Box>
 
-          {/* 3. THE CONTENT CARD (Responsive spacing and sizing) */}
-          <Grid size={{ xs: 12, md: 7 }} sx={{ pl: { md: 10 }, textAlign: { xs: 'center', md: 'left' } }}>
-            <motion.div style={{ y: yCard }}>
-              <Stack spacing={{ xs: 2, md: 4 }} alignItems={{ xs: 'center', md: 'flex-start' }}>
-                <Box>
-                  <Typography variant="overline" sx={{ color: "#d4af37", letterSpacing: { xs: 4, md: 8 }, fontWeight: 900, fontSize: '0.7rem' }}>
-                    FOUNDER & VISIONARY
-                  </Typography>
-                  <Typography variant="h2" sx={{
+          {/* 3. CONTENT AREA */}
+          <Box 
+            sx={{ 
+              width: { xs: "100%", md: "55%" }, 
+              textAlign: { xs: "center", md: "left" },
+              mt: { md: 10 } 
+            }}
+          >
+            <Stack spacing={{ xs: 3, md: 4 }} alignItems={{ xs: "center", md: "flex-start" }}>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
+                <Typography
+                  variant="overline"
+                  sx={{ 
+                    color: "#d4af37", 
+                    letterSpacing: { xs: 4, md: 6 }, 
+                    fontWeight: 700,
+                    fontSize: { xs: "0.7rem", md: "0.8rem" }
+                  }}
+                >
+                  FOUNDING DIRECTOR — EST. 1993
+                </Typography>
+                <Typography
+                  variant="h2"
+                  sx={{
                     fontFamily: "'Playfair Display', serif",
-                    fontWeight: 900,
-                    fontSize: { xs: "2.8rem", sm: "4rem", md: "6rem" },
+                    fontSize: { xs: "2.8rem", sm: "3.5rem", md: "4.5rem" },
+                    fontWeight: 800,
                     lineHeight: 1,
-                    color: "#fff",
-                    mt: 1
-                  }}>
-                    Mukesh <br /> Bhatia
-                  </Typography>
-                </Box>
+                    mt: 1,
+                  }}
+                >
+                  Mukesh Bhatia
+                </Typography>
+              </motion.div>
 
-                <Divider sx={{ borderColor: "rgba(212, 175, 55, 0.4)", width: "60px", borderBottomWidth: 3 }} />
+              <Divider 
+                sx={{ 
+                  borderColor: "#d4af37", 
+                  width: "60px", 
+                  borderBottomWidth: 2,
+                  mx: { xs: "auto", md: 0 } 
+                }} 
+              />
 
-                <Typography variant="h5" sx={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontStyle: "italic",
-                  color: "rgba(255,255,255,0.9)",
-                  fontSize: { xs: "1rem", sm: "1.2rem", md: "1.8rem" },
-                  maxWidth: "550px",
-                  lineHeight: 1.5
-                }}>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ duration: 1, delay: 0.5 }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: "'Playfair Display', serif",
+                    fontSize: { xs: "1.1rem", md: "1.4rem" },
+                    fontStyle: "italic",
+                    lineHeight: 1.6,
+                    color: "rgba(255,255,255,0.9)",
+                    mb: 3,
+                    maxWidth: "500px"
+                  }}
+                >
                   "Integrity is the only ingredient that cannot be substituted."
                 </Typography>
 
-                <Typography sx={{
-                  color: "rgba(255,255,255,0.5)",
-                  lineHeight: 1.8,
-                  fontSize: { xs: "0.9rem", md: "1.1rem" },
-                  maxWidth: "500px"
-                }}>
-                  Founded in 1994, Mukesh Bhatia built Vyapar Doot on the pillars of resilience and radical honesty. What began as a local agency has evolved into a global benchmark for spice brokerage.
+                <Typography
+                  sx={{
+                    fontSize: { xs: "0.95rem", md: "1.1rem" },
+                    lineHeight: 1.8,
+                    color: "rgba(255,255,255,0.5)",
+                    fontWeight: 300,
+                    maxWidth: "480px"
+                  }}
+                >
+                  For over three decades, Mukesh Bhatia has anchored Vyapar Doot with a philosophy of radical transparency. His vision transformed a local agency into a global benchmark for the spice trade.
                 </Typography>
 
-                {/* Director's Mark (Signature) */}
-                <Box sx={{ pt: { xs: 2, md: 4 } }}>
-                  <Typography sx={{
-                    fontFamily: "'Playfair Display', serif",
-                    fontSize: { xs: "1.5rem", md: "1.8rem" },
-                    color: "#d4af37",
-                    mb: 0
-                  }}>
+                {/* Mobile Signature */}
+                <Box sx={{ mt: 4 }}>
+                   <Typography
+                    sx={{
+                      fontFamily: "'Playfair Display', serif",
+                      fontSize: "2rem",
+                      color: "#d4af37",
+                      lineHeight: 1
+                    }}
+                  >
                     M. Bhatia
                   </Typography>
-                  <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.2)", letterSpacing: 2, display: 'block' }}>
-                    FOUNDING DIRECTOR — EST. 1994
-                  </Typography>
                 </Box>
-              </Stack>
-            </motion.div>
-          </Grid>
-
-        </Grid>
+              </motion.div>
+            </Stack>
+          </Box>
+        </Box>
       </Container>
     </Box>
   );

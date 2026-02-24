@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { Box, Typography, Container, Grid, Divider } from "@mui/material";
+import { Box, Typography, Container, Stack } from "@mui/material";
 
 const founders = [
   {
@@ -21,157 +21,105 @@ const founders = [
 
 export default function FoundersSection() {
   return (
-    <Box
-      component="section"
-      sx={{
-        bgcolor: "#ffffff",
-        py: { xs: 6, md: 15 }, // Tighter padding on mobile
-        px: { xs: 2, md: 0 }  // Side breathing room for mobile
-      }}
-    >
+    <Box component="section" sx={{ bgcolor: "#fff", py: { xs: 10, md: 20 } }}>
       <Container maxWidth="lg">
-        {/* --- HEADER --- */}
-        <Box sx={{ mb: { xs: 6, md: 10 }, textAlign: { xs: "center", md: "left" } }}>
-          <Typography
-            sx={{
-              color: "#D4AF37",
-              fontWeight: 700,
-              fontSize: "0.75rem",
-              letterSpacing: 3,
-              mb: 1
-            }}
-          >
-            LEADERSHIP
-          </Typography>
-          <Typography
-            variant="h2"
-            sx={{
-              fontFamily: "'Times New Roman', serif",
-              fontSize: { xs: "2.2rem", md: "3.2rem" },
-              color: "#111",
-              fontWeight: 400,
-              lineHeight: 1.2
-            }}
-          >
-            Director's Message
-          </Typography>
-          <Box sx={{
-            width: 40,
-            height: 2,
-            bgcolor: "#D4AF37",
-            mt: 2,
-            mx: { xs: "auto", md: 0 }
-          }} />
-        </Box>
-
-        {founders.map((founder, index) => (
-          <Box
-            key={index}
-            sx={{
-              mb: { xs: 8, md: 12 },
-              pb: { xs: 6, md: 10 },
-              borderBottom: index === 0 ? "1px solid #f0f0f0" : "none"
-            }}
-          >
-            <Grid
-              container
-              spacing={{ xs: 3, md: 8 }}
-              alignItems="center"
-              // Keeps the image on top for both, but allows desktop to split
-              flexDirection="row"
+        <Stack spacing={{ xs: 15, md: 30 }}>
+          {founders.map((founder, index) => (
+            <Box 
+              key={index} 
+              sx={{ 
+                display: "flex", 
+                flexDirection: { 
+                  xs: "column", 
+                  md: index % 2 === 0 ? "row" : "row-reverse" 
+                },
+                alignItems: "center",
+                position: "relative"
+              }}
             >
-
-              {/* IMAGE: Constrained and centered on mobile */}
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Box sx={{
-                  width: { xs: "160px", md: "220px" },
-                  mx: { xs: "auto", md: 0 },
-                  position: "relative"
+              {/* IMAGE WRAPPER - Takes up 60% width */}
+              <Box sx={{ 
+                width: { xs: "100%", md: "60%" },
+                position: "relative",
+                zIndex: 1
+              }}>
+                <Box sx={{ 
+                  position: "relative", 
+                  aspectRatio: { xs: "1/1", md: "16/10" },
+                  overflow: "hidden",
+                  filter: "grayscale(100%)",
+                  boxShadow: "20px 20px 60px rgba(0,0,0,0.05)"
                 }}>
-                  <Box sx={{
-                    aspectRatio: "3/4",
-                    position: "relative",
-                    overflow: "hidden",
-                    filter: "grayscale(100%) contrast(1.05)",
-                    borderRadius: "2px", // Sharp but modern
-                    border: "1px solid #eee"
-                  }}>
-                    <Image
-                      src={founder.image}
-                      alt={founder.name}
-                      fill
-                      priority
-                      className="object-cover"
-                    />
-                  </Box>
+                  <Image
+                    src={founder.image}
+                    alt={founder.name}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
                 </Box>
-              </Grid>
+              </Box>
 
-              {/* TEXT: Balanced for thumb-scrolling */}
-              <Grid size={{ xs: 12, md: 8 }}>
-                <Box sx={{ textAlign: { xs: "center", md: "left" } }}>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontFamily: "'Times New Roman', serif",
-                      fontSize: { xs: "1.5rem", md: "1.8rem" },
-                      color: "#111",
-                      mb: 0.5
-                    }}
-                  >
-                    {founder.name}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      color: "#D4AF37",
-                      fontWeight: 600,
-                      fontSize: "0.8rem",
-                      letterSpacing: 2,
-                      mb: 3
-                    }}
-                  >
-                    {founder.role}
-                  </Typography>
+              {/* CONTENT CARD - Overlaps the image slightly on desktop */}
+              <Box sx={{ 
+                width: { xs: "90%", md: "45%" },
+                bgcolor: "white",
+                p: { xs: 4, md: 8 },
+                mt: { xs: -4, md: 0 }, // Mobile overlap
+                ml: { md: index % 2 === 0 ? -10 : 0 }, // Desktop overlap
+                mr: { md: index % 2 === 1 ? -10 : 0 }, // Desktop overlap
+                zIndex: 2,
+                boxShadow: "0 30px 60px rgba(0,0,0,0.1)",
+                borderLeft: { md: index % 2 === 0 ? "4px solid #D4AF37" : "none" },
+                borderRight: { md: index % 2 === 1 ? "4px solid #D4AF37" : "none" },
+              }}>
+                <Typography
+                  sx={{
+                    color: "#D4AF37",
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    letterSpacing: 3,
+                    mb: 2
+                  }}
+                >
+                  {founder.role}
+                </Typography>
+                
+                <Typography
+                  variant="h3"
+                  sx={{
+                    fontFamily: "serif",
+                    fontSize: { xs: "2rem", md: "2.5rem" },
+                    color: "#111",
+                    mb: 3,
+                    lineHeight: 1
+                  }}
+                >
+                  {founder.name}
+                </Typography>
 
-                  <Typography
-                    sx={{
-                      color: "#444",
-                      fontSize: { xs: "1rem", md: "1.15rem" },
-                      lineHeight: 1.7,
-                      fontWeight: 300,
-                      fontStyle: "italic",
-                      px: { xs: 1, md: 0 } // Extra padding for mobile reading
-                    }}
-                  >
-                    "{founder.message}"
-                  </Typography>
+                <Typography
+                  sx={{
+                    color: "#555",
+                    fontSize: "1.1rem",
+                    lineHeight: 1.8,
+                    fontStyle: "italic",
+                    mb: 4
+                  }}
+                >
+                  "{founder.message}"
+                </Typography>
 
-                  {/* Executive Stamp */}
-                  <Box sx={{
-                    mt: 4,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: { xs: "center", md: "flex-start" }
-                  }}>
-                    <Divider sx={{ width: "30px", bgcolor: "#D4AF37", height: "1px", mb: 1.5, border: "none" }} />
-                    <Typography
-                      sx={{
-                        fontSize: "0.65rem",
-                        fontWeight: 800,
-                        color: "#bbb",
-                        letterSpacing: 1.5,
-                        textTransform: "uppercase"
-                      }}
-                    >
-                      Bhatia Group Attestation
-                    </Typography>
-                  </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <Box sx={{ width: 30, height: 1, bgcolor: "#D4AF37" }} />
+                  <Typography sx={{ fontSize: "0.65rem", fontWeight: 900, color: "#ccc", letterSpacing: 1 }}>
+                    OFFICIAL STATEMENT
+                  </Typography>
                 </Box>
-              </Grid>
-
-            </Grid>
-          </Box>
-        ))}
+              </Box>
+            </Box>
+          ))}
+        </Stack>
       </Container>
     </Box>
   );
