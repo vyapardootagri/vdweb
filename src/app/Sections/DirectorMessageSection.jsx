@@ -21,9 +21,38 @@ const founders = [
 
 export default function FoundersSection() {
   return (
-    <Box component="section" sx={{ bgcolor: "#fff", py: { xs: 10, md: 15 } }}>
-      <Container maxWidth="lg">
-        <Stack spacing={{ xs: 10, md: 20 }}>
+    <Box 
+      component="section" 
+      sx={{ 
+        bgcolor: "#FCF9F2", // Subtle parchment/cream background
+        py: { xs: 8, md: 15 },
+        px: { xs: 2, md: 4 },
+        position: "relative"
+      }}
+    >
+      {/* ROYAL OUTER BORDER */}
+      <Box sx={{
+        position: "absolute",
+        top: 20,
+        left: 20,
+        right: 20,
+        bottom: 20,
+        border: "1px solid #D4AF37",
+        pointerEvents: "none",
+        zIndex: 0,
+        "&::after": {
+          content: '""',
+          position: "absolute",
+          top: 4,
+          left: 4,
+          right: 4,
+          bottom: 4,
+          border: "2px double #D4AF37", // Traditional double border
+        }
+      }} />
+
+      <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
+        <Stack spacing={{ xs: 12, md: 24 }}>
           {founders.map((founder, index) => (
             <Box 
               key={index} 
@@ -34,21 +63,20 @@ export default function FoundersSection() {
                   md: index % 2 === 0 ? "row" : "row-reverse" 
                 },
                 alignItems: "center",
-                position: "relative"
               }}
             >
-              {/* IMAGE WRAPPER - Changed to 45% width for a sleeker portrait look */}
+              {/* IMAGE WRAPPER with Royal Frame */}
               <Box sx={{ 
                 width: { xs: "100%", md: "45%" },
                 position: "relative",
-                zIndex: 1
+                p: 1,
+                bgcolor: "#D4AF37", // Gold frame effect
+                boxShadow: "10px 10px 30px rgba(0,0,0,0.2)"
               }}>
                 <Box sx={{ 
                   position: "relative", 
-                  // Standard Portrait Ratio (4:5 or 3:4)
                   aspectRatio: { xs: "1/1.2", md: "4/5" }, 
                   overflow: "hidden",
-                  boxShadow: "20px 20px 60px rgba(0,0,0,0.05)"
                 }}>
                   <Image
                     src={founder.image}
@@ -60,26 +88,38 @@ export default function FoundersSection() {
                 </Box>
               </Box>
 
-              {/* CONTENT CARD - Adjusted width and overlap */}
+              {/* CONTENT CARD */}
               <Box sx={{ 
-                width: { xs: "90%", md: "50%" },
+                width: { xs: "90%", md: "52%" },
                 bgcolor: "white",
                 p: { xs: 4, md: 8 },
-                mt: { xs: -6, md: 0 }, // Significant overlap on mobile
-                ml: { md: index % 2 === 0 ? -8 : 0 }, // Slide over portrait image
-                mr: { md: index % 2 === 1 ? -8 : 0 },
+                mt: { xs: -6, md: 0 },
+                ml: { md: index % 2 === 0 ? -6 : 0 },
+                mr: { md: index % 2 === 1 ? -6 : 0 },
                 zIndex: 2,
-                boxShadow: "0 30px 60px rgba(0,0,0,0.1)",
-                borderLeft: { md: index % 2 === 0 ? "4px solid #D4AF37" : "none" },
-                borderRight: { md: index % 2 === 1 ? "4px solid #D4AF37" : "none" },
+                boxShadow: "0 20px 50px rgba(0,0,0,0.15)",
+                border: "1px solid #eee",
+                position: "relative",
+                // Subtle decorative corner
+                "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    top: 15,
+                    left: 15,
+                    width: 30,
+                    height: 30,
+                    borderTop: "2px solid #D4AF37",
+                    borderLeft: "2px solid #D4AF37",
+                }
               }}>
                 <Typography
                   sx={{
                     color: "#D4AF37",
-                    fontSize: "0.75rem",
+                    fontSize: "0.85rem",
                     fontWeight: 700,
-                    letterSpacing: 3,
-                    mb: 2
+                    letterSpacing: 4,
+                    mb: 1,
+                    textAlign: "uppercase"
                   }}
                 >
                   {founder.role}
@@ -88,11 +128,11 @@ export default function FoundersSection() {
                 <Typography
                   variant="h3"
                   sx={{
-                    fontFamily: "serif",
-                    fontSize: { xs: "2rem", md: "2.5rem" },
-                    color: "#111",
+                    fontFamily: "'Playfair Display', serif", // Ensure this font is loaded
+                    fontWeight: 600,
+                    fontSize: { xs: "2rem", md: "2.8rem" },
+                    color: "#1a1a1a",
                     mb: 3,
-                    lineHeight: 1.2
                   }}
                 >
                   {founder.name}
@@ -100,15 +140,31 @@ export default function FoundersSection() {
 
                 <Typography
                   sx={{
-                    color: "#555",
-                    fontSize: "1.1rem",
-                    lineHeight: 1.8,
+                    color: "#444",
+                    fontSize: "1.15rem",
+                    lineHeight: 1.9,
                     fontStyle: "italic",
-                    mb: 4
+                    fontFamily: "serif",
+                    mb: 4,
+                    position: "relative"
                   }}
                 >
-                  "{founder.message}"
+                  {founder.message}
                 </Typography>
+
+                {/* Royal Divider */}
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <Box sx={{ width: 40, height: "1px", bgcolor: "#D4AF37" }} />
+                  <Typography sx={{ 
+                    fontSize: "0.7rem", 
+                    fontWeight: 800, 
+                    color: "#999", 
+                    letterSpacing: 2 
+                  }}>
+                    ESTABLISHED TRADITION
+                  </Typography>
+                  <Box sx={{ width: 40, height: "1px", bgcolor: "#D4AF37" }} />
+                </Box>
               </Box>
             </Box>
           ))}

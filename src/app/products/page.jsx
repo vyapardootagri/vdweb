@@ -1,239 +1,273 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Image from "next/image";
-import emailjs from "@emailjs/browser";
+import emailjs from '@emailjs/browser';
 import { 
-  Box, Container, Typography, Paper, Stack, 
-  Button, Modal, TextField, IconButton, 
-  Grid, Fade, Select, MenuItem, FormControl, InputLabel, Divider, Alert, Snackbar, CircularProgress
+  Box, Typography, Stack, Button, Drawer, TextField, 
+  CircularProgress, IconButton, Container, Divider, Alert, Snackbar,
+  Grid, ToggleButton, ToggleButtonGroup, useTheme, useMediaQuery, MenuItem, Fade
 } from "@mui/material";
 
 // Icons
-import CloseIcon from "@mui/icons-material/Close";
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import VerifiedIcon from '@mui/icons-material/Verified';
-import PublicIcon from '@mui/icons-material/Public';
-import EngineeringIcon from '@mui/icons-material/Engineering';
+import CloseIcon from '@mui/icons-material/Close';
+import SearchIcon from '@mui/icons-material/Search';
+import EastIcon from '@mui/icons-material/East';
+import HubIcon from '@mui/icons-material/Hub';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
-const allProducts = [
+const products = [
   { 
-    name: "Cumin Seeds (Jeera)", 
-    category: "Seeds",
-    description: "High-essential oil content, sortex-cleaned for global export standards. Available in various purity levels.",
-    origins: [
-      { loc: "Unjha, Gujarat", quality: "Premium Grade", leadTime: "3-5 Days" },
-      { loc: "Rajasthan Hub", quality: "Singapore Grade", leadTime: "4-6 Days" }
-    ],
-    grades: ["Singapore 99%", "Europe Quality 99.5%"],
-    image: "/spices/cumin.jpg" 
+    id: "ID: 1026-I", 
+    anchor: "cumin",
+    name: "Royal Cumin", 
+    path: "cumin.jpg", 
+    origins: ["Rajasthan Hub", "Unjha Cluster", "Gulf Port Stock", "Custom Request"],
+    grades: ["Sortex 99.5% Purity", "Machine Cleaned", "Europe Quality (EU Standard)", "Ground Powder"],
+    desc: "Sourced from the arid belts of Rajasthan, our cumin is prized for its high essential oil content and distinct earthy aroma."
   },
   { 
-    name: "Turmeric (Haldi)", 
-    category: "Rhizomes",
-    description: "Double-polished fingers with high curcumin density sourced directly from primary auction centers.",
-    origins: [
-      { loc: "Nizamabad", quality: "Standard Export", leadTime: "5-7 Days" },
-      { loc: "Sangli", quality: "High Curcumin (5.5%+)", leadTime: "6-8 Days" }
-    ],
-    grades: ["Double Polished", "Single Polished"],
-    image: "/spices/turmeric.webp" 
-  },
-  { 
-    name: "Black Pepper", 
-    category: "Whole Spices",
-    description: "Bold black pepper with high piperine content, available in various densities (550 G/L to 600 G/L).",
-    origins: [
-      { loc: "Idukki, Kerala", quality: "Malabar Garbled", leadTime: "7-10 Days" },
-      { loc: "Coorg, Karnataka", quality: "Tellicherry Bold", leadTime: "7-10 Days" }
-    ],
-    grades: ["550 G/L", "600 G/L (Bold)"],
-    image: "/spices/kalonji.jpg" 
+    id: "ID: 1026-II", 
+    anchor: "turmeric",
+    name: "Amber Turmeric", 
+    path: "turmeric.webp", 
+    origins: ["Nizamabad Hub", "Sangli Cluster", "Erode Export Zone", "Custom Request"],
+    grades: ["Double Polished Fingers", "Single Polished", "High Curcumin Bulb", "Pure Turmeric Powder"],
+    desc: "Golden-hued turmeric with certified curcumin levels, processed for vibrant color consistency and long shelf life."
   }
 ];
 
-const modalStyle = {
-  position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-  width: { xs: '95%', sm: 800 }, bgcolor: 'white', p: { xs: 4, md: 8 }, outline: 'none',
-  boxShadow: "0 24px 48px rgba(0,0,0,0.2)"
-};
+export default function SimpleHeritageAtelier() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const ACCENT = "#B08D57";
 
-export default function TradeTerminalLayout() {
-  const BRAND = "GLOBAL SPICE TRADERS";
-  const PRIMARY = "#050505"; 
-  const ACCENT = "#C5A059"; 
-
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [status, setStatus] = useState({ open: false, message: "", severity: "success" });
+  const [selected, setSelected] = useState(null);
+  const [unit, setUnit] = useState('metric');
+  const [currency, setCurrency] = useState('USD');
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  const handleTradeSubmit = async (e) => {
+  const [formData, setFormData] = useState({
+    user_name: '', user_email: '', user_mobile: '', company_name: '',
+    tonnage: '', destination: '', custom_origin: '', custom_quality: ''
+  });
+
+  const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const scrollToProduct = (anchor) => {
+    const el = document.getElementById(anchor);
+    if (el) {
+      const offset = 120;
+      window.scrollTo({ top: el.offsetTop - offset, behavior: 'smooth' });
+    }
+  };
+
+  const sendEmail = (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-        setLoading(false);
-        setStatus({ open: true, message: "Request Logged", severity: "success" });
-        setOpenModal(false);
-    }, 1000);
+
+    const templateParams = {
+      product: selected.name,
+      catalog_origin: formData.custom_origin, 
+      catalog_grade: formData.custom_quality, 
+      tonnage: formData.tonnage,
+      unit: unit === 'metric' ? 'MT' : 'Lbs',
+      currency: currency,
+      custom_origin: formData.custom_origin,
+      custom_quality: formData.custom_quality,
+      destination: formData.destination,
+      user_name: formData.user_name,
+      company_name: formData.company_name,
+      user_email: formData.user_email,
+      user_mobile: formData.user_mobile
+    };
+
+    emailjs.send('service_24u1ybi', 'template_4l04gxf', templateParams, 'qQidVoE0H-xPwYEeg')
+      .then(() => {
+        setLoading(false); 
+        setSuccess(true); 
+        setSelected(null);
+        setFormData({ user_name: '', user_email: '', user_mobile: '', company_name: '', tonnage: '', destination: '', custom_origin: '', custom_quality: '' });
+      })
+      .catch(() => { setLoading(false); alert("Error transmitting requisition."); });
   };
 
   return (
-    <Box sx={{ bgcolor: "#F4F4F4", minHeight: "100vh", color: PRIMARY }}>
+    <Box sx={{ bgcolor: "#FDFCF8", minHeight: "100vh", pb: 10 }}>
       
-      {/* NAV */}
-      <Box sx={{ borderBottom: "1px solid #E0E0E0", bgcolor: "white", py: 3, position: 'sticky', top: 0, zIndex: 1000 }}>
-        <Container maxWidth="xl">
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="h5" sx={{ fontWeight: 900, letterSpacing: -1 }}>
-              {BRAND} <span style={{ color: ACCENT }}>•</span>
-            </Typography>
-            <Typography variant="caption" sx={{ fontWeight: 800, color: ACCENT, letterSpacing: 1.5 }}>
-                TERMINAL v2.0
-            </Typography>
+      {/* --- FLOATING NAVIGATION --- */}
+      <Box sx={{ bgcolor: "rgba(26, 26, 26, 0.98)", backdropFilter: 'blur(10px)', py: 2, position: 'sticky', top: 0, zIndex: 1200 }}>
+        <Container maxWidth="lg">
+          <Stack direction="row" spacing={3} sx={{ overflowX: 'auto', '&::-webkit-scrollbar': { display: 'none' }, alignItems: 'center' }}>
+            <Typography sx={{ color: ACCENT, fontWeight: 900, fontSize: '0.7rem', letterSpacing: 2, whiteSpace: 'nowrap' }}>INDEX / 2026</Typography>
+            {products.map((p) => (
+              <Button 
+                key={p.id} 
+                onClick={() => scrollToProduct(p.anchor)}
+                sx={{ 
+                  color: '#FFF', fontSize: '0.75rem', opacity: 0.7, letterSpacing: 1, whiteSpace: 'nowrap',
+                  '&:hover': { opacity: 1, color: ACCENT } 
+                }}
+              >
+                {p.name}
+              </Button>
+            ))}
           </Stack>
         </Container>
       </Box>
 
-      {/* HERO SECTION */}
-      <Box sx={{ pt: 8, pb: 4, bgcolor: "white" }}>
+      {/* --- PREFERENCE HEADER --- */}
+      <Box sx={{ borderBottom: "1px solid #EDE4D0", py: 4, bgcolor: '#FFF' }}>
         <Container maxWidth="lg">
-          <Typography variant="h2" sx={{ fontWeight: 800, mb: 2, lineHeight: 1.1, fontSize: { xs: '2.5rem', md: '4rem' } }}>
-            Bulk Commodity <br/> <span style={{ color: ACCENT }}>Procurement Matrix.</span>
-          </Typography>
-          <Typography sx={{ color: "#777", maxWidth: 600, mb: 4 }}>
-            Institutional grade spice sourcing. Direct access to primary origins, 
-            standardized quality protocols, and global logistical clearing.
-          </Typography>
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Typography variant="h1" sx={{ fontFamily: 'serif', fontSize: '1.5rem', mb: 1 }}>Inventory <b>Atelier</b></Typography>
+              <Typography variant="caption" sx={{ color: '#888', letterSpacing: 1 }}>SELECT COMMODITY TO INITIALIZE TRADE MANIFEST</Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Stack direction="row" spacing={2} justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
+                <ToggleButtonGroup value={currency} exclusive onChange={(e, v) => v && setCurrency(v)} size="small" sx={{ border: '1px solid #EDE4D0' }}>
+                  <ToggleButton value="INR" sx={{ border: 'none', px: 2 }}>₹ INR</ToggleButton>
+                  <ToggleButton value="USD" sx={{ border: 'none', px: 2 }}>$ USD</ToggleButton>
+                </ToggleButtonGroup>
+                <ToggleButtonGroup value={unit} exclusive onChange={(e, v) => v && setUnit(v)} size="small" sx={{ border: '1px solid #EDE4D0' }}>
+                  <ToggleButton value="metric" sx={{ border: 'none', px: 2 }}>MT</ToggleButton>
+                  <ToggleButton value="imperial" sx={{ border: 'none', px: 2 }}>LBS</ToggleButton>
+                </ToggleButtonGroup>
+              </Stack>
+            </Grid>
+          </Grid>
         </Container>
       </Box>
 
-      {/* PRODUCT LIST */}
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Stack spacing={6}>
-          {allProducts.map((p) => (
-            <Paper 
-              key={p.name} 
-              elevation={0} 
-              sx={{ 
-                border: "1px solid #E0E0E0", 
-                borderRadius: '4px', 
-                overflow: 'hidden', 
-                bgcolor: 'white',
-                transition: '0.3s',
-                '&:hover': { boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }
-              }}
-            >
-              <Grid container>
-                {/* BIGGER IMAGE COLUMN (Changed from md=4 to md=5) */}
-                <Grid item xs={12} md={5}>
-                  <Box sx={{ 
-                    height: { xs: 300, md: "100%" }, 
-                    minHeight: { md: 450 }, // Height increased
-                    position: 'relative', 
-                    bgcolor: '#222',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <Typography variant="caption" color="grey.700">Connecting to Origin...</Typography>
-                    <Image 
-                      src={p.image} 
-                      alt={p.name} 
-                      fill 
-                      style={{ objectFit: "cover" }} 
-                      sizes="(max-width: 768px) 100vw, 40vw"
-                      priority
-                    />
+      {/* --- PRODUCT SHOWCASE --- */}
+      <Container maxWidth="lg" sx={{ mt: 8 }}>
+        <Stack spacing={18}>
+          {products.map((p, idx) => (
+            <Box id={p.anchor} key={p.id} sx={{ display: 'flex', flexDirection: { xs: 'column', md: idx % 2 === 0 ? 'row' : 'row-reverse' }, gap: { xs: 4, md: 10 }, alignItems: 'center' }}>
+              
+              {/* Image with Decorative Frame */}
+              <Box sx={{ flex: 1, position: 'relative', width: '100%' }}>
+                <Fade in timeout={1000}>
+                  <Box sx={{ position: 'relative', height: { xs: 400, md: 550 }, zIndex: 2, overflow: 'hidden' }}>
+                    <Image src={`/spices/${p.path}`} alt={p.name} fill style={{ objectFit: 'cover' }} />
                   </Box>
-                </Grid>
+                </Fade>
+                <Box sx={{ 
+                  position: 'absolute', top: 30, [idx % 2 === 0 ? 'right' : 'left']: -30, 
+                  width: '100%', height: '100%', bgcolor: '#F4EEE0', zIndex: 1 
+                }} />
+              </Box>
 
-                {/* CONTENT COLUMN (Changed from md=8 to md=7) */}
-                <Grid item xs={12} md={7} sx={{ p: { xs: 3, md: 6 }, display: 'flex', flexDirection: 'column' }}>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
-                        <Box>
-                            <Typography variant="overline" sx={{ color: ACCENT, fontWeight: 900 }}>{p.category}</Typography>
-                            <Typography variant="h3" sx={{ fontWeight: 800, mt: 1, mb: 2 }}>{p.name}</Typography>
-                        </Box>
-                        <Button 
-                            variant="outlined" 
-                            onClick={() => { setSelectedProduct(p); setOpenModal(true); }}
-                            sx={{ borderColor: PRIMARY, color: PRIMARY, borderRadius: 0, px: 3, fontWeight: 700 }}
-                        >
-                            Enquire
-                        </Button>
-                    </Stack>
-                    
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 4, lineHeight: 1.7 }}>
-                        {p.description}
-                    </Typography>
-
-                    <Divider sx={{ mb: 4 }} />
-
-                    <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 900, fontSize: '0.7rem', letterSpacing: 1 }}>
-                        Sourcing Origins
-                    </Typography>
-                    
-                    <Grid container spacing={2}>
-                        {p.origins.map((o) => (
-                        <Grid item xs={12} sm={6} key={o.loc}>
-                            <Box sx={{ p: 2, borderLeft: `3px solid ${ACCENT}`, bgcolor: "#FBFBFB" }}>
-                                <Typography variant="body2" sx={{ fontWeight: 800 }}>{o.loc}</Typography>
-                                <Typography variant="caption" color="text.secondary">{o.quality}</Typography>
-                            </Box>
-                        </Grid>
-                        ))}
-                    </Grid>
+              {/* Text Content */}
+              <Box sx={{ flex: 1 }}>
+                <Stack spacing={3}>
+                  <Typography variant="overline" sx={{ color: ACCENT, fontWeight: 900, letterSpacing: 5 }}>DIRECT ORIGIN</Typography>
+                  <Typography variant="h2" sx={{ fontFamily: 'serif', fontSize: { xs: '2.8rem', md: '4rem' }, lineHeight: 1 }}>{p.name}</Typography>
+                  <Typography variant="body1" sx={{ color: '#555', fontSize: '1.1rem', lineHeight: 1.8, maxWidth: 500 }}>{p.desc}</Typography>
+                  
+                  <Box sx={{ pt: 2 }}>
+                    <Button 
+                      onClick={() => {
+                        setSelected(p);
+                        setFormData(prev => ({ ...prev, custom_origin: p.origins[0], custom_quality: p.grades[0] }));
+                      }}
+                      endIcon={<EastIcon />}
+                      sx={{ 
+                        bgcolor: '#1A1A1A', color: '#FFF', borderRadius: 0, px: 5, py: 2.5,
+                        '&:hover': { bgcolor: ACCENT, color: '#1A1A1A' },
+                        transition: '0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+                      }}
+                    >
+                      REQUEST QUOTATION
+                    </Button>
                   </Box>
-
-                  <Box sx={{ mt: 4 }}>
-                    <Stack direction="row" spacing={2}>
-                        {p.grades.map(g => (
-                            <Box key={g} sx={{ px: 2, py: 0.5, bgcolor: '#eee', borderRadius: '20px' }}>
-                                <Typography sx={{ fontSize: '0.65rem', fontWeight: 700 }}>{g}</Typography>
-                            </Box>
-                        ))}
-                    </Stack>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Paper>
+                </Stack>
+              </Box>
+            </Box>
           ))}
         </Stack>
       </Container>
 
-      {/* FOOTER */}
-      <Box sx={{ py: 6, textAlign: 'center', bgcolor: 'white', borderTop: '1px solid #eee' }}>
-        <Typography variant="caption" color="text.disabled">
-            GLOBAL SPICE TRADERS • 2026 INDUSTRIAL SOURCING DIVISION
-        </Typography>
-      </Box>
+      {/* --- TRADE MANIFEST DRAWER --- */}
+      <Drawer 
+        anchor={isMobile ? "bottom" : "right"} 
+        open={Boolean(selected)} 
+        onClose={() => setSelected(null)} 
+        PaperProps={{ sx: { width: { xs: '100%', md: 550 }, p: 0, bgcolor: '#FFF', borderLeft: `1px solid ${ACCENT}` } }}
+      >
+        {selected && (
+          <Box component="form" onSubmit={sendEmail}>
+            {/* Drawer Header */}
+            <Box sx={{ bgcolor: '#1A1A1A', color: '#FFF', p: 4, position: 'relative' }}>
+              <IconButton onClick={() => setSelected(null)} sx={{ position: 'absolute', right: 10, top: 10, color: '#FFF' }}><CloseIcon /></IconButton>
+              <Typography variant="h5" sx={{ fontFamily: 'serif', color: ACCENT }}>Trade Manifest</Typography>
+              <Typography variant="caption" sx={{ opacity: 0.6, letterSpacing: 2 }}>REQUISITION NO. {selected.id}</Typography>
+            </Box>
 
-      {/* MODAL */}
-      <Modal open={openModal} onClose={() => setOpenModal(false)}>
-        <Fade in={openModal}>
-          <Box sx={modalStyle}>
-            <Stack direction="row" justifyContent="space-between" sx={{ mb: 4 }}>
-                <Typography variant="h5" sx={{ fontWeight: 900 }}>Enquiry Protocol</Typography>
-                <IconButton onClick={() => setOpenModal(false)}><CloseIcon /></IconButton>
+            <Stack spacing={4} sx={{ p: 5 }}>
+              {/* Section 1 */}
+              <Box>
+                <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 3 }}>
+                  <AssignmentIcon sx={{ fontSize: 18, color: ACCENT }} />
+                  <Typography variant="subtitle2" sx={{ fontWeight: 900, letterSpacing: 1 }}>ENTITY IDENTIFICATION</Typography>
+                </Stack>
+                <Grid container spacing={3}>
+                  <Grid item xs={12}><TextField fullWidth name="user_name" label="Legal Name" required onChange={handleInputChange} value={formData.user_name} variant="standard" /></Grid>
+                  <Grid item xs={12}><TextField fullWidth name="company_name" label="Company / Entity" required onChange={handleInputChange} value={formData.company_name} variant="standard" /></Grid>
+                  <Grid item xs={6}><TextField fullWidth name="user_mobile" label="WhatsApp Chat Link" required onChange={handleInputChange} value={formData.user_mobile} variant="standard" /></Grid>
+                  <Grid item xs={6}><TextField fullWidth name="user_email" label="Business Email" required type="email" onChange={handleInputChange} value={formData.user_email} variant="standard" /></Grid>
+                </Grid>
+              </Box>
+
+              <Divider />
+
+              {/* Section 2 */}
+              <Box>
+                <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 3 }}>
+                  <HubIcon sx={{ fontSize: 18, color: ACCENT }} />
+                  <Typography variant="subtitle2" sx={{ fontWeight: 900, letterSpacing: 1 }}>LOGISTICS & SPECS</Typography>
+                </Stack>
+                <Stack spacing={3}>
+                  <TextField select fullWidth name="custom_origin" label="Prefered Sourcing Hub" value={formData.custom_origin} onChange={handleInputChange} variant="filled">
+                    {selected.origins.map(o => <MenuItem key={o} value={o}>{o}</MenuItem>)}
+                  </TextField>
+
+                  <TextField select fullWidth name="custom_quality" label="Processing Grade" value={formData.custom_quality} onChange={handleInputChange} variant="filled">
+                    {selected.grades.map(g => <MenuItem key={g} value={g}>{g}</MenuItem>)}
+                  </TextField>
+
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}><TextField fullWidth name="tonnage" label={`Volume (${unit === 'metric' ? 'MT' : 'Lbs'})`} required onChange={handleInputChange} value={formData.tonnage} variant="outlined" /></Grid>
+                    <Grid item xs={6}><TextField fullWidth name="destination" label="Discharge Port" required onChange={handleInputChange} value={formData.destination} variant="outlined" /></Grid>
+                  </Grid>
+                </Stack>
+              </Box>
+
+              <Button 
+                type="submit" 
+                fullWidth 
+                disabled={loading} 
+                sx={{ 
+                  py: 2.5, bgcolor: '#1A1A1A', color: ACCENT, fontWeight: 900, 
+                  letterSpacing: 2, borderRadius: 0, mt: 4,
+                  '&:hover': { bgcolor: '#000', transform: 'translateY(-2px)' },
+                  transition: 'all 0.3s'
+                }}
+              >
+                {loading ? <CircularProgress size={24} color="inherit" /> : "TRANSMIT MANIFEST"}
+              </Button>
             </Stack>
-            <form onSubmit={handleTradeSubmit}>
-              <Stack spacing={3}>
-                <TextField fullWidth label="Company Name" required variant="filled" />
-                <TextField fullWidth label="Destination Port" required variant="filled" />
-                <TextField fullWidth multiline rows={3} label="Specific Requirements" variant="filled" />
-                <Button fullWidth type="submit" variant="contained" sx={{ bgcolor: PRIMARY, py: 2, fontWeight: 800 }}>
-                    {loading ? <CircularProgress size={24} color="inherit" /> : "Initiate Sourcing"}
-                </Button>
-              </Stack>
-            </form>
           </Box>
-        </Fade>
-      </Modal>
+        )}
+      </Drawer>
 
-      <Snackbar open={status.open} autoHideDuration={4000} onClose={() => setStatus({ ...status, open: false })}>
-        <Alert severity={status.severity} variant="filled">{status.message}</Alert>
+      <Snackbar open={success} autoHideDuration={5000} onClose={() => setSuccess(false)}>
+        <Alert severity="success" sx={{ bgcolor: '#1A1A1A', color: ACCENT, borderRadius: 0, fontWeight: 800 }}>
+          MANIFEST TRANSMITTED. OUR TRADE DESK WILL RESPOND SHORTLY.
+        </Alert>
       </Snackbar>
     </Box>
   );

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import emailjs from "@emailjs/browser";
 import { 
   Box, Container, Typography, Stack, Button, Modal, TextField, 
-  IconButton, CircularProgress, Alert, Snackbar, Fade, Grid, MenuItem 
+  IconButton, CircularProgress, Alert, Snackbar, Fade, Grid, MenuItem, Divider
 } from "@mui/material";
 
 // Icons
@@ -14,10 +14,6 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 
-/**
- * DATA CONFIGURATION
- * Origin hubs are kept in data for the modal dropdown but removed from the main UI display.
- */
 const FEATURED = [
   { 
     name: "Cumin Seeds", 
@@ -67,7 +63,6 @@ const FEATURED = [
     hubs: ["Rajasthan", "Madhya Pradesh"], 
     size: 4 
   },
- 
 ];
 
 const GRADES = [
@@ -82,26 +77,30 @@ export default function ProductShowcaseSection() {
   const ACCENT = "#C5A059"; 
   const PRIMARY = "#050505";
 
-  // States
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: "success", message: "", open: false });
   const [selectedProduct, setSelectedProduct] = useState(null);
+  
+  // State updated to match your EmailJS HTML Template fields
   const [formData, setFormData] = useState({ 
-    name: "", 
-    company: "", 
-    mobile: "", 
-    quantity: "", 
-    grade: "Machine Cleaned",
-    origin: "" 
+    user_name: "", 
+    user_email: "",
+    company_name: "", 
+    user_mobile: "", 
+    tonnage: "", 
+    catalog_grade: "Machine Cleaned",
+    custom_origin: "",
+    destination: "",
+    currency: "USD", // Default currency
+    custom_quality: ""
   });
 
-  // Handlers
   const handleOpen = (product) => {
     setSelectedProduct(product);
     setFormData({
       ...formData,
-      origin: product.hubs[0] 
+      custom_origin: product.hubs[0] 
     });
     setOpen(true);
   };
@@ -109,31 +108,47 @@ export default function ProductShowcaseSection() {
   const handleClose = () => {
     if (!loading) {
       setOpen(false);
+      setFormData({ 
+        user_name: "", user_email: "", company_name: "", user_mobile: "", 
+        tonnage: "", catalog_grade: "Machine Cleaned", custom_origin: "", 
+        destination: "", currency: "USD", custom_quality: "" 
+      });
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    // MAPPING DATA TO YOUR HTML TEMPLATE VARIABLES
+    const templateParams = {
+        product: selectedProduct.name.replace('\n', ' '), 
+        catalog_origin: selectedProduct.hubs.join(", "), // Shows all available hubs as reference
+        catalog_grade: formData.catalog_grade,
+        tonnage: formData.tonnage,
+        unit: "MT", // Standard unit
+        currency: formData.currency,
+        custom_origin: formData.custom_origin,
+        custom_quality: formData.custom_quality || "Standard export quality requested.",
+        destination: formData.destination,
+        user_name: formData.user_name,
+        company_name: formData.company_name,
+        user_email: formData.user_email,
+        user_mobile: formData.user_mobile
+    };
+
     try {
       await emailjs.send(
         "service_24u1ybi", 
-        "template_2cc732h", 
-        {
-          commodity_name: selectedProduct.name,
-          origin_hub: formData.origin,
-          grade_spec: formData.grade,
-          tonnage: formData.quantity,
-          from_name: formData.name,
-          company: formData.company,
-          contact_info: formData.mobile,
-        }, 
+        "template_4l04gxf", 
+        templateParams,
         "qQidVoE0H-xPwYEeg"
       );
-      setStatus({ type: "success", message: "Inquiry Transmitted Successfully.", open: true });
+      setStatus({ type: "success", message: "Trade Requisition Transmitted.", open: true });
       handleClose();
     } catch (error) {
-      setStatus({ type: "error", message: "Transmission Error. Please use WhatsApp.", open: true });
+      console.error("EmailJS Error:", error);
+      setStatus({ type: "error", message: "Network Error. Please try WhatsApp.", open: true });
     } finally {
       setLoading(false);
     }
@@ -162,16 +177,9 @@ export default function ProductShowcaseSection() {
                 <Box 
                   onClick={() => handleOpen(p)}
                   sx={{ 
-                    position: 'relative', 
-                    height: { xs: 300, md: 400 },
-                    cursor: 'pointer',
-                    overflow: 'hidden',
-                    mb: 3,
-                    transition: '0.4s ease',
-                    "&:hover": { 
-                        filter: 'brightness(0.8)',
-                        "& .img-overlay": { opacity: 1 } 
-                    }
+                    position: 'relative', height: { xs: 300, md: 400 },
+                    cursor: 'pointer', overflow: 'hidden', mb: 3, transition: '0.4s ease',
+                    "&:hover": { filter: 'brightness(0.8)', "& .img-overlay": { opacity: 1 } }
                   }}
                 >
                   <Image src={p.image} alt={p.name} fill style={{ objectFit: 'cover' }} />
@@ -187,24 +195,15 @@ export default function ProductShowcaseSection() {
                 </Box>
 
                 <Stack alignItems={{ xs: 'center', sm: 'flex-start' }} spacing={1}>
-<Typography variant="h4" sx={{ 
-  fontWeight: 900, 
-  letterSpacing: -1, 
-  mb: 1, 
-  whiteSpace: "pre-line" // <--- Add this
-}}>
-  {p.name}
-</Typography>                  
+                    <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: -1, mb: 1, whiteSpace: "pre-line" }}>
+                        {p.name}
+                    </Typography>                  
                   <Stack direction="row" spacing={2}>
-                    <Button 
-                      onClick={() => handleOpen(p)}
-                      variant="outlined" 
-                      sx={{ color: PRIMARY, borderRadius: 0, px: 3, fontWeight: 900 }}
-                    >
+                    <Button onClick={() => handleOpen(p)} variant="outlined" sx={{ color: PRIMARY, borderRadius: 0, px: 3, fontWeight: 900 }}>
                       ENQUIRE
                     </Button>
                     <IconButton 
-                      onClick={() => window.open(`https://wa.me/91XXXXXXXXXX`)}
+                      onClick={() => window.open(`https://wa.me/91XXXXXXXXXX`)} 
                       sx={{ border: `1px solid #25D366`, borderRadius: 0, color: '#25D366' }}
                     >
                       <WhatsAppIcon fontSize="small" />
@@ -216,37 +215,15 @@ export default function ProductShowcaseSection() {
           ))}
         </Grid>
 
-        {/* Updated Disclaimer Section */}
-        <Box sx={{ mt: 10, textAlign: 'center', opacity: 0.8 }}>
-            <Typography variant="caption" sx={{ maxWidth: 850, display: 'inline-block', fontStyle: 'italic', lineHeight: 1.8, color: '#555' }}>
-                <b>Note:</b> All images shown are for representative purposes only. 
-                As agricultural products are subject to seasonal variations, the actual color, size, and appearance 
-                may differ. Physical quality and specifications will be strictly governed by the selected grade 
-                and final contract terms.
-            </Typography>
-        </Box>
-
-        {/* Footer CTA */}
         <Box sx={{ mt: 8, textAlign: 'center' }}>
-            <Button 
-                onClick={() => router.push('/products')}
-                endIcon={<ArrowRightAltIcon />}
-                sx={{ 
-                    color: PRIMARY, 
-                    fontWeight: 900, 
-                    fontSize: '1.1rem',
-                    borderBottom: `2px solid ${ACCENT}`,
-                    borderRadius: 0,
-                    "&:hover": { bgcolor: 'transparent', letterSpacing: 2 }
-                }}
-            >
+            <Button onClick={() => router.push('/products')} endIcon={<ArrowRightAltIcon />} sx={{ color: PRIMARY, fontWeight: 900, fontSize: '1.1rem', borderBottom: `2px solid ${ACCENT}`, borderRadius: 0, "&:hover": { bgcolor: 'transparent', letterSpacing: 2 } }}>
                 VIEW FULL CATALOG
             </Button>
         </Box>
       </Container>
 
       {/* Manifest Modal */}
-      <Modal open={open} onClose={handleClose}>
+      <Modal open={open} onClose={handleClose} closeAfterTransition>
         <Fade in={open}>
           <Box sx={modalStyle}>
             <Stack direction="row" justifyContent="space-between" mb={4}>
@@ -255,54 +232,74 @@ export default function ProductShowcaseSection() {
             </Stack>
 
             <Typography variant="body2" sx={{ mb: 3, fontWeight: 700, color: ACCENT }}>
-                COMMODITY: {selectedProduct?.name.toUpperCase()}
+                REQUISITION: {selectedProduct?.name.toUpperCase().replace('\n', ' ')}
             </Typography>
 
-            <Stack component="form" onSubmit={handleSubmit} spacing={3}>
-              <TextField 
-                select 
-                fullWidth 
-                label="Preferred Origin" 
-                variant="standard" 
-                value={formData.origin} 
-                onChange={(e) => setFormData({...formData, origin: e.target.value})}
-              >
-                {selectedProduct?.hubs.map((h) => <MenuItem key={h} value={h}>{h}</MenuItem>)}
-              </TextField>
+            <Stack component="form" onSubmit={handleSubmit} spacing={2.5}>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <TextField 
+                    select fullWidth label="Preferred Origin" variant="standard" 
+                    value={formData.custom_origin} 
+                    onChange={(e) => setFormData({...formData, custom_origin: e.target.value})}
+                  >
+                    {selectedProduct?.hubs.map((h) => <MenuItem key={h} value={h}>{h}</MenuItem>)}
+                  </TextField>
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField 
+                    select fullWidth label="Quality Grade" variant="standard" 
+                    value={formData.catalog_grade} 
+                    onChange={(e) => setFormData({...formData, catalog_grade: e.target.value})}
+                  >
+                    {GRADES.map((g) => <MenuItem key={g} value={g}>{g}</MenuItem>)}
+                  </TextField>
+                </Grid>
+              </Grid>
+
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <TextField 
+                    fullWidth label="Quantity (MT)" variant="standard" type="number" required
+                    value={formData.tonnage}
+                    onChange={(e) => setFormData({...formData, tonnage: e.target.value})} 
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                   <TextField 
+                    fullWidth label="Discharge Port" variant="standard" required
+                    value={formData.destination}
+                    onChange={(e) => setFormData({...formData, destination: e.target.value})} 
+                  />
+                </Grid>
+              </Grid>
 
               <TextField 
-                select 
-                fullWidth 
-                label="Quality Grade" 
-                variant="standard" 
-                value={formData.grade} 
-                onChange={(e) => setFormData({...formData, grade: e.target.value})}
-              >
-                {GRADES.map((g) => <MenuItem key={g} value={g}>{g}</MenuItem>)}
-              </TextField>
-
-              <TextField 
-                fullWidth 
-                label="Target Quantity (MT)" 
-                variant="standard" 
-                type="number"
-                required
-                onChange={(e) => setFormData({...formData, quantity: e.target.value})} 
+                fullWidth label="Specific Quality Requirements (Optional)" variant="standard"
+                placeholder="e.g. Moisture < 8%, Purity > 99%"
+                value={formData.custom_quality}
+                onChange={(e) => setFormData({...formData, custom_quality: e.target.value})} 
               />
 
-              <Box sx={{ py: 1 }}>
-                <TextField required label="Representative/Company Name" variant="standard" fullWidth sx={{ mb: 2 }} onChange={(e) => setFormData({...formData, name: e.target.value})} />
-                <TextField required label="WhatsApp No (Inc. Country Code)" variant="standard" fullWidth onChange={(e) => setFormData({...formData, mobile: e.target.value})} />
-              </Box>
+              <Divider sx={{ my: 1 }} />
+
+              <TextField required label="Representative Name" variant="standard" fullWidth value={formData.user_name} onChange={(e) => setFormData({...formData, user_name: e.target.value})} />
+              <TextField required label="Company / Entity" variant="standard" fullWidth value={formData.company_name} onChange={(e) => setFormData({...formData, company_name: e.target.value})} />
+              
+              <Grid container spacing={2}>
+                 <Grid item xs={6}>
+                    <TextField required type="email" label="Business Email" variant="standard" fullWidth value={formData.user_email} onChange={(e) => setFormData({...formData, user_email: e.target.value})} />
+                 </Grid>
+                 <Grid item xs={6}>
+                    <TextField required label="WhatsApp (Inc. Code)" variant="standard" fullWidth value={formData.user_mobile} onChange={(e) => setFormData({...formData, user_mobile: e.target.value})} />
+                 </Grid>
+              </Grid>
 
               <Button 
-                type="submit" 
-                variant="contained" 
-                disabled={loading} 
-                fullWidth 
-                sx={{ py: 2, borderRadius: 0, fontWeight: 900, mt: 2, "&:hover": { bgcolor: '#333' } }}
+                type="submit" variant="contained" disabled={loading} fullWidth 
+                sx={{ py: 2, bgcolor: PRIMARY, borderRadius: 0, fontWeight: 900, mt: 2, "&:hover": { bgcolor: '#333' } }}
               >
-                {loading ? <CircularProgress size={24} color="inherit" /> : "TRANSMIT INQUIRY"}
+                {loading ? <CircularProgress size={24} color="inherit" /> : "TRANSMIT TRADE REQUISITION"}
               </Button>
             </Stack>
           </Box>
@@ -318,7 +315,9 @@ export default function ProductShowcaseSection() {
 
 const modalStyle = {
   position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-  width: { xs: '95%', sm: 500 }, bgcolor: 'white', p: { xs: 4, md: 6 }, outline: 'none',
+  width: { xs: '95%', sm: 550 }, bgcolor: 'white', p: { xs: 4, md: 6 }, outline: 'none',
   borderTop: `6px solid #C5A059`,
-  boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+  boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+  maxHeight: '90vh',
+  overflowY: 'auto'
 };
