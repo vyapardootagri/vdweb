@@ -8,12 +8,12 @@ const founders = [
   {
     name: "Mayur Bhatia",
     role: "MANAGING DIRECTOR",
-    image: "/raw.jpg",
+    image: "/mayur1.jpg",
     message: "Our vision is to redefine the spice trade with unmatched integrity, transparency, and global reach. We believe in building lasting partnerships that drive mutual success."
   },
   {
     name: "Tushar Bhatia",
-    role: "DIRECTOR",
+    role: "MANAGING DIRECTOR",
     image: "/raw.jpg",
     message: "We are committed to delivering premium quality spices while ensuring fair trade practices and sustainability at every stage of the supply chain."
   },
@@ -21,9 +21,9 @@ const founders = [
 
 export default function FoundersSection() {
   return (
-    <Box component="section" sx={{ bgcolor: "#fff", py: { xs: 10, md: 20 } }}>
+    <Box component="section" sx={{ bgcolor: "#fff", py: { xs: 10, md: 15 } }}>
       <Container maxWidth="lg">
-        <Stack spacing={{ xs: 15, md: 30 }}>
+        <Stack spacing={{ xs: 10, md: 20 }}>
           {founders.map((founder, index) => (
             <Box 
               key={index} 
@@ -37,37 +37,37 @@ export default function FoundersSection() {
                 position: "relative"
               }}
             >
-              {/* IMAGE WRAPPER - Takes up 60% width */}
+              {/* IMAGE WRAPPER - Changed to 45% width for a sleeker portrait look */}
               <Box sx={{ 
-                width: { xs: "100%", md: "60%" },
+                width: { xs: "100%", md: "45%" },
                 position: "relative",
                 zIndex: 1
               }}>
                 <Box sx={{ 
                   position: "relative", 
-                  aspectRatio: { xs: "1/1", md: "16/10" },
+                  // Standard Portrait Ratio (4:5 or 3:4)
+                  aspectRatio: { xs: "1/1.2", md: "4/5" }, 
                   overflow: "hidden",
-                  filter: "grayscale(100%)",
                   boxShadow: "20px 20px 60px rgba(0,0,0,0.05)"
                 }}>
                   <Image
                     src={founder.image}
                     alt={founder.name}
                     fill
-                    className="object-cover"
+                    style={{ objectFit: "cover" }}
                     priority
                   />
                 </Box>
               </Box>
 
-              {/* CONTENT CARD - Overlaps the image slightly on desktop */}
+              {/* CONTENT CARD - Adjusted width and overlap */}
               <Box sx={{ 
-                width: { xs: "90%", md: "45%" },
+                width: { xs: "90%", md: "50%" },
                 bgcolor: "white",
                 p: { xs: 4, md: 8 },
-                mt: { xs: -4, md: 0 }, // Mobile overlap
-                ml: { md: index % 2 === 0 ? -10 : 0 }, // Desktop overlap
-                mr: { md: index % 2 === 1 ? -10 : 0 }, // Desktop overlap
+                mt: { xs: -6, md: 0 }, // Significant overlap on mobile
+                ml: { md: index % 2 === 0 ? -8 : 0 }, // Slide over portrait image
+                mr: { md: index % 2 === 1 ? -8 : 0 },
                 zIndex: 2,
                 boxShadow: "0 30px 60px rgba(0,0,0,0.1)",
                 borderLeft: { md: index % 2 === 0 ? "4px solid #D4AF37" : "none" },
@@ -92,7 +92,7 @@ export default function FoundersSection() {
                     fontSize: { xs: "2rem", md: "2.5rem" },
                     color: "#111",
                     mb: 3,
-                    lineHeight: 1
+                    lineHeight: 1.2
                   }}
                 >
                   {founder.name}
@@ -109,13 +109,6 @@ export default function FoundersSection() {
                 >
                   "{founder.message}"
                 </Typography>
-
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <Box sx={{ width: 30, height: 1, bgcolor: "#D4AF37" }} />
-                  <Typography sx={{ fontSize: "0.65rem", fontWeight: 900, color: "#ccc", letterSpacing: 1 }}>
-                    OFFICIAL STATEMENT
-                  </Typography>
-                </Box>
               </Box>
             </Box>
           ))}
