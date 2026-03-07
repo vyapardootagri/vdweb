@@ -13,42 +13,83 @@ export default function FounderSection() {
       component="section"
       sx={{
         position: "relative",
-        bgcolor: "#0a0a0a",
+        bgcolor: "#080705",
         color: "#fff",
-        // Responsive padding: less on mobile, more on desktop
-        py: { xs: 6, md: 15 },
-        // Responsive margins
+        py: { xs: 8, md: 16 },
         mx: { xs: 1.5, md: 4 },
         my: 2,
         overflow: "hidden",
-        border: "3px solid rgba(226, 181, 35, 0.85)",
-        
-        // Background Image Config
-        backgroundImage: `linear-gradient(rgba(10, 10, 10, 0.85), rgba(10, 10, 10, 0.85)), url('/rawspice.jpg')`, 
+        // Layered border: outer dark + inner gold hairline for depth
+        border: "1px solid rgba(212,175,55,0.25)",
+        outline: "4px solid rgba(212,175,55,0.08)",
+        outlineOffset: "6px",
+        backgroundImage: `
+          linear-gradient(160deg, rgba(8,7,5,0.92) 0%, rgba(12,10,6,0.97) 100%),
+          url('/rawspice.jpg')
+        `,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        // 'fixed' often breaks on mobile browsers; 'scroll' is safer for performance
         backgroundAttachment: { xs: "scroll", md: "fixed" },
       }}
     >
-      {/* 1. BACKGROUND GHOST TEXT - Scaled down for mobile */}
-      <Typography
-        variant="h1"
+      {/* ── Decorative corner ornaments ── */}
+      {["top left", "top right", "bottom left", "bottom right"].map((pos) => {
+        const [v, h] = pos.split(" ");
+        return (
+          <Box
+            key={pos}
+            sx={{
+              position: "absolute",
+              [v]: 16,
+              [h]: 16,
+              width: 40,
+              height: 40,
+              borderTop: v === "top" ? "2px solid rgba(212,175,55,0.55)" : "none",
+              borderBottom: v === "bottom" ? "2px solid rgba(212,175,55,0.55)" : "none",
+              borderLeft: h === "left" ? "2px solid rgba(212,175,55,0.55)" : "none",
+              borderRight: h === "right" ? "2px solid rgba(212,175,55,0.55)" : "none",
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+          />
+        );
+      })}
+
+      {/* ── Ambient warm glow ── */}
+      <Box
         sx={{
           position: "absolute",
-          top: { xs: "5%", md: "10%" },
-          left: "5%",
-          fontFamily: "'Playfair Display', serif",
-          fontSize: { xs: "22vw", md: "12vw" }, // Larger relative size for mobile impact
+          top: "30%",
+          right: "-10%",
+          width: { xs: "70vw", md: "40vw" },
+          height: { xs: "70vw", md: "40vw" },
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 70%)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
+      {/* ── Ghost watermark text ── */}
+      <Typography
+        sx={{
+          position: "absolute",
+          bottom: { xs: "2%", md: "5%" },
+          right: "-2%",
+          fontFamily: "'Cormorant Garamond', 'Playfair Display', serif",
+          fontSize: { xs: "18vw", md: "11vw" },
           fontWeight: 900,
-          color: "rgba(212, 175, 55, 0.03)",
+          color: "rgba(212,175,55,0.03)",
           textTransform: "uppercase",
+          letterSpacing: "-0.02em",
           zIndex: 0,
           pointerEvents: "none",
           whiteSpace: "nowrap",
+          userSelect: "none",
+          lineHeight: 1,
         }}
       >
-        Visionary
+        SPICES
       </Typography>
 
       <Container maxWidth="lg" sx={{ position: "relative", zIndex: 2 }}>
@@ -56,120 +97,294 @@ export default function FounderSection() {
           sx={{
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
-            alignItems: "center",
-            gap: { xs: 4, md: 8 },
+            alignItems: { xs: "center", md: "flex-start" },
+            gap: { xs: 5, md: 10 },
           }}
         >
-          {/* 2. THE IMAGE CONTAINER */}
-          <Box sx={{ width: { xs: "100%", md: "45%" } }}>
+          {/* ── LEFT: Image + heritage badge ── */}
+          <Box sx={{ width: { xs: "85%", sm: "65%", md: "40%" }, flexShrink: 0 }}>
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 1, ease: "easeOut" }}
+              transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
-              <Box
-                component="img"
-                src="/papa1.jpg"
-                alt="Mukesh Bhatia"
-                sx={{
-                  width: "100%",
-                  // Auto height on mobile to prevent stretching, fixed on desktop
-                  height: { xs: "auto", sm: "400px", md: "350px" },
-                  maxHeight: { xs: "450px", md: "none" },
-                  objectFit: "cover",
-                  objectPosition: "top center",
-                  display: "block",
-                  borderRadius: { xs: "4px", md: "0px" }, // Slight roundness on mobile looks modern
-                  filter: "contrast(1.1) brightness(0.9)",
-                  boxShadow: "0 15px 35px rgba(0,0,0,0.6)",
-                }}
-              />
+              {/* Photo frame with gold rule */}
+              <Box sx={{ position: "relative" }}>
+                {/* Top-left rule accent */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: -10,
+                    left: -10,
+                    width: 80,
+                    height: 80,
+                    borderTop: "2px solid #d4af37",
+                    borderLeft: "2px solid #d4af37",
+                    zIndex: 2,
+                  }}
+                />
+                <Box
+                  component="img"
+                  src="/papa1.jpg"
+                  alt="Mukesh Bhatia — Founding Director, Vyapar Doot"
+                  sx={{
+                    width: "100%",
+                    height: { xs: "auto", sm: "430px", md: "480px" },
+                    maxHeight: { xs: "420px", md: "none" },
+                    objectFit: "cover",
+                    objectPosition: "top center",
+                    display: "block",
+                    filter: "contrast(1.05) brightness(0.88) sepia(0.12)",
+                    boxShadow: "0 25px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(212,175,55,0.15)",
+                  }}
+                />
+                {/* Bottom-right rule accent */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    bottom: -10,
+                    right: -10,
+                    width: 80,
+                    height: 80,
+                    borderBottom: "2px solid #d4af37",
+                    borderRight: "2px solid #d4af37",
+                    zIndex: 2,
+                  }}
+                />
+
+                {/* Floating heritage badge */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                  transition={{ duration: 0.8, delay: 0.9 }}
+                  style={{ position: "absolute", bottom: 20, left: -18 }}
+                >
+                  <Box
+                    sx={{
+                      bgcolor: "#d4af37",
+                      color: "#080705",
+                      px: 2,
+                      py: 1.5,
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: "0.7rem",
+                        fontWeight: 700,
+                        letterSpacing: 2,
+                        textTransform: "uppercase",
+                        lineHeight: 1.3,
+                      }}
+                    >
+                      30 Years of<br />Trusted Trade
+                    </Typography>
+                  </Box>
+                </motion.div>
+              </Box>
             </motion.div>
           </Box>
 
-          {/* 3. CONTENT AREA */}
+          {/* ── RIGHT: Content ── */}
           <Box
             sx={{
-              width: { xs: "100%", md: "55%" },
+              width: { xs: "100%", md: "60%" },
               textAlign: { xs: "center", md: "left" },
-              px: { xs: 1, md: 0 } // Extra padding for text on small screens
+              px: { xs: 1.5, md: 0 },
+              pt: { md: 3 },
             }}
           >
-            <Stack spacing={3} alignItems={{ xs: "center", md: "flex-start" }}>
+            <Stack spacing={0} alignItems={{ xs: "center", md: "flex-start" }}>
+
+              {/* Overline */}
               <motion.div
-                initial={{ opacity: 0, x: { xs: 0, md: 20 } }}
-                animate={isInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ duration: 0.8, delay: 0.3 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.7, delay: 0.2 }}
               >
                 <Typography
-                  variant="overline"
                   sx={{
                     color: "#d4af37",
-                    letterSpacing: { xs: 2, md: 4 },
-                    fontWeight: 700,
-                    fontSize: { xs: "0.65rem", md: "0.75rem" },
+                    letterSpacing: { xs: 3, md: 5 },
+                    fontWeight: 600,
+                    fontSize: { xs: "0.6rem", md: "0.68rem" },
+                    textTransform: "uppercase",
                     display: "block",
-                    mb: 1
+                    mb: 1.5,
+                    fontFamily: "'Cormorant Garamond', serif",
                   }}
                 >
-                  FOUNDING DIRECTOR — EST. 1993
-                </Typography>
-                <Typography
-                  variant="h2"
-                  sx={{
-                    fontFamily: "'Playfair Display', serif",
-                    // Significantly scaled for mobile readability
-                    fontSize: { xs: "2.2rem", sm: "3rem", md: "4rem" },
-                    fontWeight: 800,
-                    lineHeight: 1.1,
-                  }}
-                >
-                  Mukesh Bhatia
+                  Founding Director — Est. 1993
                 </Typography>
               </motion.div>
 
-              <Divider sx={{ borderColor: "#d4af37", width: "60px", borderBottomWidth: 2 }} />
+              {/* Name */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.9, delay: 0.35 }}
+              >
+                <Typography
+                  variant="h2"
+                  sx={{
+                    fontFamily: "'Cormorant Garamond', 'Playfair Display', serif",
+                    fontSize: { xs: "2.8rem", sm: "3.5rem", md: "4.8rem" },
+                    fontWeight: 700,
+                    lineHeight: 1.0,
+                    letterSpacing: "-0.01em",
+                    mb: 2,
+                  }}
+                >
+                  Mukesh<br />Bhatia
+                </Typography>
+              </motion.div>
 
+              {/* Gold rule */}
+              <motion.div
+                initial={{ scaleX: 0 }}
+                animate={isInView ? { scaleX: 1 } : {}}
+                transition={{ duration: 0.7, delay: 0.55 }}
+                style={{ transformOrigin: "left center", width: "100%" }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    mb: 3.5,
+                    justifyContent: { xs: "center", md: "flex-start" },
+                  }}
+                >
+                  <Box sx={{ width: 50, height: "1.5px", bgcolor: "#d4af37" }} />
+                  <Box
+                    sx={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: "50%",
+                      bgcolor: "#d4af37",
+                      flexShrink: 0,
+                    }}
+                  />
+                  <Box sx={{ width: 20, height: "1.5px", bgcolor: "rgba(212,175,55,0.35)" }} />
+                </Box>
+              </motion.div>
+
+              {/* Role descriptor */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
-                transition={{ duration: 1, delay: 0.5 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
               >
                 <Typography
                   sx={{
-                    fontFamily: "'Playfair Display', serif",
-                    fontSize: { xs: "1rem", md: "1.3rem" },
-                    fontStyle: "italic",
-                    lineHeight: 1.5,
-                    color: "rgba(255,255,255,0.9)",
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: { xs: "0.75rem", md: "0.8rem" },
+                    letterSpacing: { xs: 2, md: 3 },
+                    textTransform: "uppercase",
+                    color: "rgba(212,175,55,0.7)",
                     mb: 2.5,
-                    maxWidth: "500px"
+                    fontWeight: 500,
                   }}
                 >
-                  "Integrity is the only ingredient that cannot be substituted."
+                  Canvassing Agent &amp; Market Broker · Spice Trade
                 </Typography>
+              </motion.div>
 
+              {/* Quote */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ duration: 1, delay: 0.7 }}
+              >
+                <Box
+                  sx={{
+                    borderLeft: { md: "2px solid rgba(212,175,55,0.5)" },
+                    borderTop: { xs: "2px solid rgba(212,175,55,0.5)", md: "none" },
+                    pl: { md: 2.5 },
+                    pt: { xs: 2, md: 0 },
+                    mb: 3,
+                    maxWidth: "500px",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: { xs: "1.15rem", md: "1.45rem" },
+                      fontStyle: "italic",
+                      lineHeight: 1.6,
+                      color: "rgba(255,255,255,0.88)",
+                    }}
+                  >
+                    "A fair rate, honestly quoted, is the foundation upon which
+                    every enduring trade is built."
+                  </Typography>
+                </Box>
+              </motion.div>
+
+              {/* Body copy */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ duration: 1, delay: 0.85 }}
+              >
                 <Typography
                   sx={{
-                    fontSize: { xs: "0.9rem", md: "1rem" },
-                    lineHeight: 1.7,
-                    color: "rgba(255,255,255,0.7)",
+                    fontSize: { xs: "0.9rem", md: "0.98rem" },
+                    lineHeight: 1.85,
+                    color: "rgba(255,255,255,0.62)",
                     fontWeight: 300,
                     maxWidth: "480px",
-                    mb: 4
+                    mb: 1.5,
+                    letterSpacing: "0.01em",
                   }}
                 >
-                  For over three decades, Mukesh Bhatia has anchored Vyapar Doot with a philosophy of radical transparency. His vision transformed a local agency into a global benchmark for the spice trade.
+                  For three decades, Mukesh Bhatia has been the decisive link between
+                  spice buyers and sellers across domestic and global markets. As a
+                  canvassing agent, he initiates trade — reading the market, quoting
+                  competitive rates, and bridging the gap between growers and traders
+                  with precision and absolute integrity.
                 </Typography>
-
                 <Typography
                   sx={{
-                    fontFamily: "'Playfair Display', serif",
-                    fontSize: { xs: "1.8rem", md: "2.2rem" },
+                    fontSize: { xs: "0.9rem", md: "0.98rem" },
+                    lineHeight: 1.85,
+                    color: "rgba(255,255,255,0.62)",
+                    fontWeight: 300,
+                    maxWidth: "480px",
+                    mb: 4,
+                    letterSpacing: "0.01em",
+                  }}
+                >
+                  His name is synonymous with reliable rate intelligence, discretion,
+                  and a network forged over 30 years of standing at the crossroads of
+                  commerce — making Vyapar Doot not merely an agency, but a trusted
+                  institution in the spice trade.
+                </Typography>
+
+                {/* Signature */}
+                <Typography
+                  sx={{
+                    fontFamily: "'Pinyon Script', 'Cormorant Garamond', cursive",
+                    fontSize: { xs: "2.2rem", md: "2.8rem" },
                     color: "#d4af37",
+                    lineHeight: 1,
+                    letterSpacing: "0.02em",
                   }}
                 >
                   M. Bhatia
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "0.65rem",
+                    letterSpacing: 3,
+                    color: "rgba(212,175,55,0.45)",
+                    textTransform: "uppercase",
+                    mt: 0.5,
+                    fontFamily: "'Cormorant Garamond', serif",
+                  }}
+                >
+                  Founding Director, Vyapar Doot
                 </Typography>
               </motion.div>
             </Stack>
